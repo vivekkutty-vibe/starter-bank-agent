@@ -1,0 +1,220 @@
+:root {
+  /* Colors - Natural/Warm Theme */
+  --bg-app: #F5F5F0;
+  /* Warm Beige/Stone */
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #EBEBE6;
+  --bg-modal: #FFFFFF;
+
+  --text-primary: #3F3228;
+  /* Dark Brown */
+  --text-secondary: #746658;
+  /* Muted Brown */
+  --text-muted: #A3968B;
+  /* Light Brown/Grey */
+
+  /* Brand Colors - Earth Tones */
+  --accent-primary: #8C6A4B;
+  /* Leather Brown */
+  --accent-glow: rgba(140, 106, 75, 0.2);
+  --accent-secondary: #5D7052;
+  /* Sage Green */
+
+  --success: #34D399;
+  --warning: #fbbf24;
+  --danger: #ef4444;
+
+  /* Spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+
+  /* Border Radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Utilities */
+.container {
+  max-width: 480px;
+  /* Mobile-first/App-like view */
+  margin: 0 auto;
+  padding: var(--space-4);
+  width: 100%;
+}
+
+.card {
+  background-color: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  border: 1px solid #E6E6E0;
+  /* Warm Grey border */
+  transition: transform var(--transition-fast), background-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.card:hover {
+  background-color: var(--bg-card-hover);
+  box-shadow: 0 8px 16px -4px rgba(63, 50, 40, 0.08);
+  /* Brown shadow */
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid #E6E6E0;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+  gap: var(--space-2);
+}
+
+.btn-primary {
+  background-color: var(--accent-primary);
+  color: #FFFFFF;
+  /* White text on Brown */
+  border: none;
+  box-shadow: 0 4px 12px var(--accent-glow);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  background-color: #6D5239;
+  /* Darker Brown */
+  box-shadow: 0 6px 16px var(--accent-glow);
+}
+
+.btn-ghost {
+  background: transparent;
+  border: none;
+}
+
+.btn-ghost:hover {
+  background: rgba(63, 50, 40, 0.05);
+}
+
+/* Form Elements */
+input[type="date"],
+input[type="number"],
+input[type="text"] {
+  width: 100%;
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+input[type="range"] {
+  accent-color: var(--accent-primary);
+}
+
+/* Typography Helpers */
+.text-sm {
+  font-size: 0.875rem;
+}
+
+.text-xs {
+  font-size: 0.75rem;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+.text-accent {
+  color: var(--accent-primary);
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.gap-2 {
+  gap: var(--space-2);
+}
+
+.gap-4 {
+  gap: var(--space-4);
+}
+
+.animate-fade-in {
+  animation: fadeIn var(--transition-normal) forwards;
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* Custom Utilities */
+.card.no-hover:hover {
+  background-color: var(--bg-card);
+  box-shadow: none;
+  border-color: #E6E6E0;
+}
+
+.interactive-bar {
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
+}
+.interactive-bar:hover {
+  opacity: 0.8;
+  transform: scaleY(1.02);
+  transform-origin: bottom;
+}
