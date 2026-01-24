@@ -64,6 +64,8 @@ export function useAgentChat(initialMessages = []) {
             reply = "I can set a budget. How much would you like to limit your 'Shopping' category to?";
         } else if (lower.includes('tips to save') || lower.includes('how to save')) {
             reply = "Try using the 'Pay in 4' option for larger purchases to smooth out cash flow, or cook at home one more night a week.";
+        } else if (lower.includes('automate more') || lower.includes('automatic round-ups')) {
+            reply = "I can definitely help with that! You can enable **'Round-ups'** to save the change from every purchase, or set up a **Targeted Transfer** that moves money to savings as soon as your payday is detected.";
         } else if (lower.includes('projected') || lower.includes('projection')) {
             reply = "You are projected to save $450 this month if you maintain your current daily spending.";
         } else if ((lower.includes('modify') || lower.includes('change')) && lower.includes('goal')) {

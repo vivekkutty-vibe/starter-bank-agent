@@ -4,6 +4,7 @@ import { ArrowRight, Check, DollarSign, Calendar, Target, Home } from 'lucide-re
 
 export function Onboarding() {
     const [step, setStep] = useState(0);
+    const [error, setError] = useState('');
     const { updateFinancials, completeOnboarding } = useUser();
     const [formData, setFormData] = useState({
         payFrequency: 'biweekly',
@@ -19,9 +20,10 @@ export function Onboarding() {
     });
 
     const handleNext = () => {
+        setError('');
         // Validation for Income Step
         if (step === 1 && !formData.nextPayDate) {
-            alert('Please select your next payday to continue.');
+            setError('Please select your next payday to continue.');
             return;
         }
 
@@ -51,12 +53,13 @@ export function Onboarding() {
     };
 
     const handleBack = () => {
+        setError('');
         setStep(prev => Math.max(0, prev - 1));
     };
 
     const steps = [
         <WelcomeStep />,
-        <IncomeStep data={formData} update={setFormData} />,
+        <IncomeStep data={formData} update={setFormData} error={error} />,
         <ExpensesStep data={formData} update={setFormData} />,
         <GoalsStep data={formData} update={setFormData} />
     ];
@@ -186,7 +189,7 @@ function WelcomeStep() {
     );
 }
 
-function IncomeStep({ data, update }) {
+function IncomeStep({ data, update, error }) {
     return (
         <div>
             <h2 style={{ fontSize: '1.25rem', marginBottom: 'var(--space-2)' }}>Income Details</h2>
@@ -223,12 +226,13 @@ function IncomeStep({ data, update }) {
                     style={{
                         width: '100%',
                         background: 'var(--bg-card)',
-                        border: '1px solid rgba(230, 230, 224, 0.8)',
+                        border: error ? '1px solid var(--danger)' : '1px solid rgba(230, 230, 224, 0.8)',
                         padding: 12,
                         borderRadius: 'var(--radius-md)',
                         fontSize: '1rem'
                     }}
                 />
+                {error && <p style={{ color: 'var(--danger)', fontSize: '0.8rem', marginTop: 8, margin: '8px 0 0' }}>{error}</p>}
             </label>
         </div>
     );

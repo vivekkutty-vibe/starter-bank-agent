@@ -21,9 +21,9 @@ export function SmartFeed() {
                         color: 'white',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         marginBottom: 'var(--space-4)',
-                        opacity: 0.2
+                        boxShadow: '0 4px 12px rgba(52, 211, 153, 0.3)'
                     }}>
-                        <CheckCircle size={24} color="var(--success)" style={{ opacity: 1 }} />
+                        <CheckCircle size={24} color="white" />
                     </div>
                     <h3 style={{ fontSize: '1rem', marginBottom: 4 }}>You're all caught up!</h3>
                     <p className="text-sm text-muted">No new insights or alerts for now.</p>

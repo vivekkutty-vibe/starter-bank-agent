@@ -149,7 +149,7 @@ export function VisualInsightModal({ isOpen, onClose, type, data, metrics }) {
                 }}>
                     <EmbeddedChat
                         contextStarters={getStarters(type, data)}
-                        initialMessage={`I can help analyze your ${type === 'cycle' ? 'spending cycle' : type === 'monthly' ? 'monthly trends' : 'spending breakdown'}. What would you like to know?`}
+                        initialMessage={`I can help analyze your ${type === 'cycle' ? 'spending cycle' : type === 'monthly' ? 'monthly trends' : type === 'savings' ? 'savings breakdown' : 'spending breakdown'}. What would you like to know?`}
                     />
                 </div>
             </div>
