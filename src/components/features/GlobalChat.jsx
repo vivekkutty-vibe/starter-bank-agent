@@ -1,13 +1,38 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Mic, Send, X, Sparkles, Bot } from 'lucide-react';
 import { useAgentChat } from '../../lib/useAgentChat';
 
 export function GlobalChat() {
     const [isOpen, setIsOpen] = useState(false);
     const [input, setInput] = useState('');
+    const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
+    const scrollRef = useRef(null);
     const { messages, sendMessage, isTyping } = useAgentChat([
         { role: 'agent', text: 'Hi Alex, I’m here. Need to find a transaction or check your budget?' }
     ]);
+
+    // Handle Visual Viewport for mobile keyboards
+    useEffect(() => {
+        if (!isOpen) return;
+
+        const handleResize = () => {
+            if (window.visualViewport) {
+                setViewportHeight(window.visualViewport.height);
+            }
+        };
+
+        window.visualViewport?.addEventListener('resize', handleResize);
+        handleResize(); // Initial call
+
+        return () => window.visualViewport?.removeEventListener('resize', handleResize);
+    }, [isOpen]);
+
+    // Auto-scroll to bottom 
+    useEffect(() => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+        }
+    }, [messages, isTyping, viewportHeight]);
 
     const handleSend = () => {
         if (!input.trim()) return;
@@ -64,12 +89,14 @@ export function GlobalChat() {
             {isOpen && (
                 <div style={{
                     position: 'fixed',
-                    top: 0, left: 0, right: 0, bottom: 0,
+                    top: 0, left: 0, right: 0,
+                    height: viewportHeight,
                     background: 'var(--bg-app)',
                     zIndex: 2000,
                     display: 'flex',
                     flexDirection: 'column',
-                    animation: 'fadeIn 0.2s ease'
+                    animation: 'fadeIn 0.2s ease',
+                    transition: 'height 0.1s ease-out'
                 }}>
                     {/* Header */}
                     <div style={{
@@ -95,7 +122,10 @@ export function GlobalChat() {
                     </div>
 
                     {/* Messages */}
-                    <div style={{ flex: 1, padding: 'var(--space-4)', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    <div
+                        ref={scrollRef}
+                        style={{ flex: 1, padding: 'var(--space-4)', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 16 }}
+                    >
                         {messages.map((msg, idx) => (
                             <div key={idx} style={{
                                 display: 'flex',

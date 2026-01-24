@@ -7,10 +7,27 @@ export function VisualInsightModal({ isOpen, onClose, type, data, metrics }) {
 
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
-            <div className="flex flex-col h-full" style={{ minHeight: '60vh', margin: '-24px -24px' }}>
-                {/* Header & Data Section */}
-                <div style={{ padding: '24px 24px 0' }}>
-                    <div className="text-center mb-6">
+            <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                height: 'calc(85vh - 48px)', // Modal maxHeight 85vh minus some buffer
+                margin: '-24px -24px'
+            }}>
+                {/* Header & Scrollable Data Section */}
+                <div style={{
+                    flex: 1,
+                    overflowY: 'auto',
+                    padding: '24px 24px 0',
+                    // Hide scrollbar but keep scrollable
+                    msOverflowStyle: 'none',
+                    scrollbarWidth: 'none'
+                }}>
+                    <style>{`
+                        .modal-scroll-data::-webkit-scrollbar {
+                            display: none;
+                        }
+                    `}</style>
+                    <div className="text-center mb-6 modal-scroll-data">
                         <h2 style={{ fontSize: '1.2rem', margin: '0 0 4px 0' }}>
                             {type === 'cycle' ? 'Cycle Comparison' :
                                 type === 'monthly' ? 'Monthly Comparison' :
@@ -24,10 +41,9 @@ export function VisualInsightModal({ isOpen, onClose, type, data, metrics }) {
                         </p>
                     </div>
 
-                    <div className="flex-1 flex flex-col justify-center" style={{ marginBottom: '24px' }}>
+                    <div style={{ marginBottom: '24px' }}>
                         {/* Comparison Charts... same logic... */}
                         {type === 'monthly' && (
-                            /* ... existing monthly chart ... */
                             <div className="card animate-fade-in">
                                 <div className="flex justify-between text-xs text-muted mb-4">
                                     <span>Monthly Comparison</span>
@@ -122,13 +138,14 @@ export function VisualInsightModal({ isOpen, onClose, type, data, metrics }) {
                     </div>
                 </div>
 
-                {/* Embedded Chat Container with clear separation */}
+                {/* Fixed Embedded Chat Container */}
                 <div style={{
                     marginTop: 'auto',
                     backgroundColor: '#FAF9F6',
                     borderTop: '1px solid #E6E6E0',
                     borderRadius: '0 0 24px 24px',
-                    overflow: 'hidden'
+                    overflow: 'hidden',
+                    flexShrink: 0
                 }}>
                     <EmbeddedChat
                         contextStarters={getStarters(type, data)}
