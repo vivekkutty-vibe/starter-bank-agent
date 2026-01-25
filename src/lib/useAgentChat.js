@@ -46,6 +46,26 @@ export function useAgentChat(initialMessages = []) {
         }
 
         // 3. Regular Insight Queries
+        if (lower.includes('compare to 2025')) {
+            return "In 2025, your average monthly spend was $2,450. Currently, you're at $2,200—putting you **10% below last year's average**. Great progress!";
+        }
+        if (lower.includes('budget for next month')) {
+            return "Based on your salary of $3,200 and fixed costs of $1,365, I recommend a **spending limit of $1,400** for next month. This ensures you hit your 25% savings goal.";
+        }
+        if (lower.includes('find hidden costs')) {
+            return "I've flagged two $15 subscriptions you haven't used in 60 days. Canceling these would save you **$360 per year**.";
+        }
+        if (lower.includes('maximize interest')) {
+            return "You have $4,500 in a standard savings account (0.1%). Moving this to a **High-Yield Savings account (4.5%)** would earn you an extra **$202 per year**.";
+        }
+        if (lower.includes('short-term goals')) {
+            return "With your current $400 monthly savings, you can fully fund a **$1,200 Emergency Fund** in exactly 3 months.";
+        }
+        if (lower.includes('show me recent transactions in')) {
+            const cat = lower.split('in ')[1] || 'this category';
+            return `In the last 14 days, you've had 4 transactions in **${cat}**, totaling $120. The largest was $45 at 'The Daily Roast'.`;
+        }
+
         if (lower.includes('compare') && (lower.includes('week') || lower.includes('last week'))) {
             reply = "You spent $210 last week, which is $50 less than this week. The increase is mostly in Dining.";
         } else if (lower.includes('compare') && (lower.includes('month') || lower.includes('cycle'))) {

@@ -242,8 +242,12 @@ export function EmbeddedChat({ contextStarters = [], initialMessage = "How can I
                             }}
                             onFocus={(e) => {
                                 e.target.style.borderColor = 'var(--accent-primary)';
-                                // Scroll into view after a delay to allow keyboard animation
-                                setTimeout(() => e.target.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
+                                // Robust scrolling for mobile keyboards
+                                setTimeout(() => {
+                                    e.target.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                                    // Secondary check for iOS
+                                    window.scrollTo(0, 0);
+                                }, 250);
                             }}
                             onBlur={(e) => e.target.style.borderColor = '#E6E6E0'}
                             onKeyDown={e => e.key === 'Enter' && handleSend()}

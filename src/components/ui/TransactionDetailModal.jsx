@@ -1,5 +1,5 @@
 import { Modal } from './Modal';
-import { AlertTriangle, Split, BadgeDollarSign, Receipt } from 'lucide-react';
+import { AlertTriangle, Split, BadgeDollarSign, Receipt, Check } from 'lucide-react';
 
 export function TransactionDetailModal({ transaction, onClose }) {
     if (!transaction) return null;
@@ -30,27 +30,35 @@ export function TransactionDetailModal({ transaction, onClose }) {
                     <div className="text-sm text-muted mt-1">{transaction.date}</div>
                 </div>
 
-                {/* Details List */}
-                <div className="flex flex-col gap-4 mb-4">
-                    <div className="flex justify-between items-center py-2 border-b border-white/5">
-                        <span className="text-muted">Status</span>
-                        <span className="font-bold">Completed</span>
+                {/* Details Card */}
+                <div className="card" style={{ marginBottom: '24px', padding: '20px' }}>
+                    <div className="flex justify-between items-center py-3 border-b border-gray-100">
+                        <span className="text-muted text-sm">Amount</span>
+                        <span className="font-bold text-lg">-${transaction.amount.toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between items-center py-2 border-b border-white/5">
-                        <span className="text-muted">Category</span>
-                        <span className="capitalize">{transaction.category}</span>
+                    <div className="flex justify-between items-center py-3 border-b border-gray-100">
+                        <span className="text-muted text-sm">Category</span>
+                        <span className="font-bold" style={{ textTransform: 'capitalize' }}>{transaction.category}</span>
                     </div>
-                    <div className="flex justify-between items-center py-2 border-b border-white/5">
-                        <span className="text-muted">Merchant Info</span>
-                        <span>London, UK</span>
+                    <div className="flex justify-between items-center py-3 border-b border-gray-100">
+                        <span className="text-muted text-sm">Date</span>
+                        <span className="font-bold">{transaction.date}</span>
+                    </div>
+                    <div className="flex justify-between items-center py-3">
+                        <span className="text-muted text-sm">Status</span>
+                        <span className="flex items-center gap-1.5 font-bold text-success">
+                            <Check size={14} /> Completed
+                        </span>
                     </div>
                 </div>
 
-                {/* Large Spacer to force separation */}
-                <div style={{ height: '32px', flexShrink: 0 }}></div>
+                <div className="flex flex-col gap-2 mb-4">
+                    <div className="text-xs text-muted font-bold uppercase tracking-wider mb-2">Merchant Info</div>
+                    <div className="text-sm font-medium">London, UK</div>
+                </div>
 
                 {/* CTAs */}
-                <div className="mt-8 pt-8 border-t border-gray-100 flex flex-col gap-3">
+                <div className="flex flex-col gap-3 mt-auto">
                     {canSplit && (
                         <button className="btn btn-primary flex items-center justify-center gap-2"
                             onClick={() => alert('Pay in 4 Flow Triggered (Mock)')}>

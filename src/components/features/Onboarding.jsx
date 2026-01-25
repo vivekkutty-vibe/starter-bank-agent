@@ -160,13 +160,14 @@ function WelcomeStep() {
 }
 
 function IncomeStep({ data, update, error, transactions }) {
-    // Mock salary-like transactions if date is picked
+    // Filter transactions strictly by the selected date and reasonably high value (> 100)
+    const potentialSalary = transactions.filter(tx => tx.date === data.nextPayDate && tx.amount > 100);
     const showSearch = data.nextPayDate !== '';
 
     return (
         <div>
             <h2 style={{ fontSize: '1.25rem', marginBottom: 'var(--space-2)' }}>Income Details</h2>
-            <p className="text-sm text-muted" style={{ marginBottom: 'var(--space-6)' }}>Knowing when you get paid helps me calculate your "Safe to Spend" amount.</p>
+            <p className="text-sm text-muted" style={{ marginBottom: 'var(--space-6)' }}>Choose your next payday. I'll check for potential salary deposits on that date.</p>
 
             <label style={{ display: 'block', marginBottom: 'var(--space-6)' }}>
                 <span className="text-xs text-muted" style={{ display: 'block', marginBottom: 4 }}>Pay Frequency</span>
@@ -210,12 +211,11 @@ function IncomeStep({ data, update, error, transactions }) {
 
             {showSearch && (
                 <div className="animate-fade-in">
-                    <span className="text-xs text-muted" style={{ display: 'block', marginBottom: 8 }}>Select Pay Amount (from last month)</span>
+                    <span className="text-xs text-muted" style={{ display: 'block', marginBottom: 8 }}>
+                        {potentialSalary.length > 0 ? "Potential Salary Detected" : "No high-value deposits on this date"}
+                    </span>
                     <div className="flex flex-col gap-2">
-                        {[
-                            { id: 101, title: 'Employer Salary', amount: 3200, date: '2025-12-30' },
-                            { id: 102, title: 'Freelance Payout', amount: 450, date: '2026-01-05' }
-                        ].map(tx => (
+                        {potentialSalary.map(tx => (
                             <div key={tx.id}
                                 onClick={() => update({ ...data, payAmount: tx.amount })}
                                 className="card flex justify-between items-center"
@@ -306,7 +306,7 @@ function GoalsStep({ data, update }) {
     const savingsPercent = Math.round((savingsTarget / data.payAmount) * 100);
 
     return (
-        <div className="modal-scroll-data">
+        <div className="modal-scroll-data" style={{ paddingBottom: '40px' }}>
             <h2 style={{ fontSize: '1.25rem', marginBottom: 'var(--space-2)' }}>Set Targets</h2>
             <p className="text-sm text-muted" style={{ marginBottom: 'var(--space-6)' }}>How much of your ${data.payAmount} income would you like to limit for spending?</p>
 
