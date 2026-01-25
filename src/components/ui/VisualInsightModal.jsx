@@ -31,7 +31,8 @@ export function VisualInsightModal({ isOpen, onClose, type, data, metrics }) {
                         <h2 style={{ fontSize: '1.2rem', margin: '0 0 4px 0' }}>
                             {type === 'cycle' ? 'Cycle Comparison' :
                                 type === 'monthly' ? 'Monthly Comparison' :
-                                    type === 'savings' ? 'Savings Breakdown' : 'Category Breakdown'}
+                                    type === 'savings' ? 'Savings Breakdown' :
+                                        data?.category ? `${data.category.charAt(0).toUpperCase() + data.category.slice(1)} Breakdown` : 'Category Breakdown'}
                         </h2>
                         <p className="text-sm text-muted">
                             {type === 'cycle' ? 'This Pay Cycle vs Last' :

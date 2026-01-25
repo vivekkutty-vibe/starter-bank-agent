@@ -93,8 +93,8 @@ export function Wallet() {
                                                 '📄'}
                                 </div>
                                 <div>
-                                    <div className="font-bold text-sm">{tx.title}</div>
-                                    <div className="text-xs text-muted">{tx.date}</div>
+                                    <div className="font-bold" style={{ fontSize: '13px' }}>{tx.title}</div>
+                                    <div className="text-muted" style={{ fontSize: '10px' }}>{tx.date}</div>
                                 </div>
                             </div>
                             <div className="font-bold">

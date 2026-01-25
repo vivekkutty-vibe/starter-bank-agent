@@ -125,24 +125,43 @@ export function Onboarding() {
 
             <div style={{
                 display: 'flex',
+                flexDirection: 'column',
                 gap: 12,
                 marginTop: 'auto',
                 paddingTop: 'var(--space-4)',
                 background: 'var(--bg-app)',
                 boxShadow: '0 -10px 20px -5px var(--bg-app)'
             }}>
-                {step > 0 && (
-                    <button onClick={handleBack} className="btn" style={{
-                        flex: 0.5,
-                        background: 'var(--bg-card-hover)',
-                        border: '1px solid #E6E6E0'
+                {error && (
+                    <div className="animate-fade-in" style={{
+                        padding: '12px',
+                        background: '#FEF2F2',
+                        border: '1px solid #FCA5A5',
+                        borderRadius: '12px',
+                        color: '#B91C1C',
+                        fontSize: '0.85rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 8
                     }}>
-                        Back
-                    </button>
+                        <AlertCircle size={16} />
+                        <span style={{ fontWeight: 600 }}>{error}</span>
+                    </div>
                 )}
-                <button onClick={handleNext} className="btn btn-primary" style={{ flex: 1 }}>
-                    {step === 3 ? 'Finish Setup' : 'Continue'} <ArrowRight size={18} />
-                </button>
+                <div style={{ display: 'flex', gap: 12 }}>
+                    {step > 0 && (
+                        <button onClick={handleBack} className="btn" style={{
+                            flex: 0.5,
+                            background: 'var(--bg-card-hover)',
+                            border: '1px solid #E6E6E0'
+                        }}>
+                            Back
+                        </button>
+                    )}
+                    <button onClick={handleNext} className="btn btn-primary" style={{ flex: 1 }}>
+                        {step === 3 ? 'Finish Setup' : 'Continue'} <ArrowRight size={18} />
+                    </button>
+                </div>
             </div>
         </div>
     );
@@ -249,7 +268,6 @@ function IncomeStep({ data, update, error }) {
                         fontSize: '1rem'
                     }}
                 />
-                {error && <p style={{ color: 'var(--danger)', fontSize: '0.8rem', marginTop: 8, margin: '8px 0 0' }}>{error}</p>}
             </label>
 
             {showSearch && (
