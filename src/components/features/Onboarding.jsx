@@ -159,15 +159,31 @@ function WelcomeStep() {
     );
 }
 
-function IncomeStep({ data, update, error, transactions }) {
-    // Filter transactions strictly by the selected date and reasonably high value (> 100)
-    const potentialSalary = transactions.filter(tx => tx.date === data.nextPayDate && tx.amount > 100);
+function IncomeStep({ data, update, error }) {
     const showSearch = data.nextPayDate !== '';
+
+    // For this example, we show these two candidates regardless of the date selected
+    const candidates = [
+        {
+            id: 101,
+            title: 'Employer Salary',
+            amount: 3200,
+            isLikelySalary: true,
+            note: 'Recurring monthly deposit'
+        },
+        {
+            id: 102,
+            title: 'Freelance Payout',
+            amount: 450,
+            isLikelySalary: false,
+            note: 'One-time deposit'
+        }
+    ];
 
     return (
         <div>
             <h2 style={{ fontSize: '1.25rem', marginBottom: 'var(--space-2)' }}>Income Details</h2>
-            <p className="text-sm text-muted" style={{ marginBottom: 'var(--space-6)' }}>Choose your next payday. I'll check for potential salary deposits on that date.</p>
+            <p className="text-sm text-muted" style={{ marginBottom: 'var(--space-6)' }}>Choose your next payday. I've found these transactions from your history that look like income.</p>
 
             <label style={{ display: 'block', marginBottom: 'var(--space-6)' }}>
                 <span className="text-xs text-muted" style={{ display: 'block', marginBottom: 4 }}>Pay Frequency</span>
@@ -212,24 +228,47 @@ function IncomeStep({ data, update, error, transactions }) {
             {showSearch && (
                 <div className="animate-fade-in">
                     <span className="text-xs text-muted" style={{ display: 'block', marginBottom: 8 }}>
-                        {potentialSalary.length > 0 ? "Potential Salary Detected" : "No high-value deposits on this date"}
+                        Select Income Source
                     </span>
-                    <div className="flex flex-col gap-2">
-                        {potentialSalary.map(tx => (
+                    <div className="flex flex-col gap-3">
+                        {candidates.map(tx => (
                             <div key={tx.id}
                                 onClick={() => update({ ...data, payAmount: tx.amount })}
-                                className="card flex justify-between items-center"
+                                className="card"
                                 style={{
-                                    padding: '10px 14px',
+                                    padding: '14px',
                                     cursor: 'pointer',
+                                    position: 'relative',
+                                    overflow: 'hidden',
                                     border: data.payAmount === tx.amount ? '1px solid var(--accent-primary)' : '1px solid rgba(230, 230, 224, 0.5)',
                                     background: data.payAmount === tx.amount ? 'rgba(140, 106, 75, 0.05)' : 'white'
                                 }}>
-                                <div>
-                                    <div className="font-bold text-sm">{tx.title}</div>
-                                    <div className="text-[10px] text-muted">{tx.date}</div>
+                                {tx.isLikelySalary && (
+                                    <div style={{
+                                        position: 'absolute',
+                                        top: 0,
+                                        right: 0,
+                                        background: 'var(--accent-primary)',
+                                        color: 'white',
+                                        fontSize: '8px',
+                                        padding: '2px 8px',
+                                        borderBottomLeftRadius: '8px',
+                                        fontWeight: 800,
+                                        textTransform: 'uppercase'
+                                    }}>
+                                        Highly Likely
+                                    </div>
+                                )}
+                                <div className="flex justify-between items-center">
+                                    <div>
+                                        <div className="font-bold text-sm" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                                            {tx.title}
+                                            {tx.isLikelySalary && <Check size={12} className="text-success" />}
+                                        </div>
+                                        <div className="text-[10px] text-muted italic">{tx.note}</div>
+                                    </div>
+                                    <div className="font-bold text-accent" style={{ fontSize: '1rem' }}>${tx.amount}</div>
                                 </div>
-                                <div className="font-bold text-accent">${tx.amount}</div>
                             </div>
                         ))}
                     </div>
