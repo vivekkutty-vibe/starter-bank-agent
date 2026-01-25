@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { Send, Sparkles, Bot } from 'lucide-react';
 import { useAgentChat } from '../../lib/useAgentChat';
 
@@ -8,13 +8,32 @@ export function EmbeddedChat({ contextStarters = [], initialMessage = "How can I
     ]);
     const scrollRef = useRef(null);
     const inputRef = useRef(null);
+    const [viewportHeight, setViewportHeight] = useState('100%');
+
+    // Handle Visual Viewport for mobile keyboards
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.visualViewport) {
+                // We use a percentage or a slightly reduced height to account for modal headers
+                const height = window.visualViewport.height;
+                // If height is significantly smaller than the available modal height, the keyboard is likely up
+                setViewportHeight(`${height * 0.75}px`);
+            }
+        };
+
+        window.visualViewport?.addEventListener('resize', handleResize);
+        return () => window.visualViewport?.removeEventListener('resize', handleResize);
+    }, []);
 
     // Auto-scroll to bottom
     useEffect(() => {
         if (scrollRef.current) {
-            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+            scrollRef.current.scrollTo({
+                top: scrollRef.current.scrollHeight,
+                behavior: 'smooth'
+            });
         }
-    }, [messages, isTyping]);
+    }, [messages, isTyping, viewportHeight]);
 
     const handleSend = () => {
         if (inputRef.current) {
@@ -27,7 +46,6 @@ export function EmbeddedChat({ contextStarters = [], initialMessage = "How can I
     };
 
     const handleStarterClick = (starter) => {
-        // If the starter has a predefined query, use that. Otherwise use the label.
         const text = starter.query || starter.label;
         sendMessage(text, { ...context, starters: contextStarters });
     };
@@ -37,11 +55,12 @@ export function EmbeddedChat({ contextStarters = [], initialMessage = "How can I
             display: 'flex',
             flexDirection: 'column',
             borderTop: '1px solid #E6E6E0',
-            backgroundColor: '#FAF9F6', // Slight off-white/warm grey
+            backgroundColor: '#FAF9F6',
             marginTop: 'auto',
             borderRadius: '0 0 16px 16px',
-            height: '100%',
-            maxHeight: '500px'
+            height: viewportHeight,
+            maxHeight: '500px',
+            transition: 'height 0.2s ease-out'
         }}>
             {/* Header / Pill */}
             <div style={{
@@ -71,16 +90,54 @@ export function EmbeddedChat({ contextStarters = [], initialMessage = "How can I
                     display: 'flex',
                     flexDirection: 'column',
                     gap: '12px',
-                    minHeight: '200px'
+                    minHeight: '200px',
+                    msOverflowStyle: 'none',
+                    scrollbarWidth: 'none'
                 }}
             >
-                {messages.map((msg, idx) => (
-                    <div key={idx} style={{
-                        display: 'flex',
-                        gap: '12px',
-                        flexDirection: msg.role === 'user' ? 'row-reverse' : 'row'
-                    }}>
-                        {msg.role === 'agent' && (
+                <style>{`.chat-area::-webkit-scrollbar { display: none; }`}</style>
+                <div className="chat-area">
+                    {messages.map((msg, idx) => (
+                        <div key={idx} style={{
+                            display: 'flex',
+                            gap: '12px',
+                            flexDirection: msg.role === 'user' ? 'row-reverse' : 'row',
+                            marginBottom: '12px'
+                        }}>
+                            {msg.role === 'agent' && (
+                                <div style={{
+                                    width: '24px',
+                                    height: '24px',
+                                    borderRadius: '50%',
+                                    backgroundColor: 'var(--accent-primary)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    color: 'white',
+                                    flexShrink: 0,
+                                    marginTop: '4px'
+                                }}>
+                                    <Bot size={14} />
+                                </div>
+                            )}
+                            <div style={{
+                                fontSize: '0.875rem',
+                                padding: '8px 12px',
+                                borderRadius: '16px',
+                                maxWidth: '85%',
+                                backgroundColor: msg.role === 'user' ? 'var(--accent-primary)' : 'white',
+                                color: msg.role === 'user' ? 'white' : 'var(--text-primary)',
+                                border: msg.role === 'user' ? 'none' : '1px solid #E6E6E0',
+                                borderBottomRightRadius: msg.role === 'user' ? '4px' : '16px',
+                                borderBottomLeftRadius: msg.role === 'user' ? '16px' : '4px',
+                                boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                            }}>
+                                {msg.text}
+                            </div>
+                        </div>
+                    ))}
+                    {isTyping && (
+                        <div style={{ display: 'flex', gap: '12px' }}>
                             <div style={{
                                 width: '24px',
                                 height: '24px',
@@ -95,53 +152,21 @@ export function EmbeddedChat({ contextStarters = [], initialMessage = "How can I
                             }}>
                                 <Bot size={14} />
                             </div>
-                        )}
-                        <div style={{
-                            fontSize: '0.875rem',
-                            padding: '8px 12px',
-                            borderRadius: '16px',
-                            maxWidth: '85%',
-                            backgroundColor: msg.role === 'user' ? 'var(--accent-primary)' : 'white',
-                            color: msg.role === 'user' ? 'white' : 'var(--text-primary)',
-                            border: msg.role === 'user' ? 'none' : '1px solid #E6E6E0',
-                            borderBottomRightRadius: msg.role === 'user' ? '4px' : '16px',
-                            borderBottomLeftRadius: msg.role === 'user' ? '16px' : '4px',
-                            boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
-                        }}>
-                            {msg.text}
+                            <div style={{
+                                fontSize: '0.875rem',
+                                padding: '8px 12px',
+                                backgroundColor: 'white',
+                                border: '1px solid #E6E6E0',
+                                borderRadius: '16px',
+                                borderBottomLeftRadius: '4px',
+                                color: 'var(--text-muted)',
+                                boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                            }}>
+                                Thinking...
+                            </div>
                         </div>
-                    </div>
-                ))}
-                {isTyping && (
-                    <div style={{ display: 'flex', gap: '12px' }}>
-                        <div style={{
-                            width: '24px',
-                            height: '24px',
-                            borderRadius: '50%',
-                            backgroundColor: 'var(--accent-primary)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: 'white',
-                            flexShrink: 0,
-                            marginTop: '4px'
-                        }}>
-                            <Bot size={14} />
-                        </div>
-                        <div style={{
-                            fontSize: '0.875rem',
-                            padding: '8px 12px',
-                            backgroundColor: 'white',
-                            border: '1px solid #E6E6E0',
-                            borderRadius: '16px',
-                            borderBottomLeftRadius: '4px',
-                            color: 'var(--text-muted)',
-                            boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
-                        }}>
-                            Thinking...
-                        </div>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
 
             {/* Conversation Starters (User Bubbles) */}
@@ -215,7 +240,11 @@ export function EmbeddedChat({ contextStarters = [], initialMessage = "How can I
                                 color: 'var(--text-primary)',
                                 backgroundColor: '#FFFFFF'
                             }}
-                            onFocus={(e) => e.target.style.borderColor = 'var(--accent-primary)'}
+                            onFocus={(e) => {
+                                e.target.style.borderColor = 'var(--accent-primary)';
+                                // Scroll into view after a delay to allow keyboard animation
+                                setTimeout(() => e.target.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
+                            }}
                             onBlur={(e) => e.target.style.borderColor = '#E6E6E0'}
                             onKeyDown={e => e.key === 'Enter' && handleSend()}
                         />
@@ -242,3 +271,4 @@ export function EmbeddedChat({ contextStarters = [], initialMessage = "How can I
         </div>
     );
 }
+

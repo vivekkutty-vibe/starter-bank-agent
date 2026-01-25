@@ -1,15 +1,19 @@
 import { useState } from 'react';
 import { useUser } from '../../lib/UserContext';
-import { ArrowRight, Check, DollarSign, Calendar, Target, Home } from 'lucide-react';
+import { ArrowRight, Check, DollarSign, Calendar, Target, Home, Zap } from 'lucide-react';
 
 export function Onboarding() {
     const [step, setStep] = useState(0);
     const [error, setError] = useState('');
-    const { updateFinancials, completeOnboarding } = useUser();
+    const { state, updateFinancials, completeOnboarding } = useUser();
+
     const [formData, setFormData] = useState({
         payFrequency: 'biweekly',
         nextPayDate: '',
+        payAmount: 3200,
+        overallLimit: 2400,
         rentAmount: '1200',
+        utilityAmount: '150',
         netflixAmount: '15.99',
         diningLimit: '300',
         shoppingLimit: '200',
@@ -32,8 +36,11 @@ export function Onboarding() {
             updateFinancials({
                 payFrequency: formData.payFrequency,
                 nextPayDate: formData.nextPayDate,
+                incomeAmount: Number(formData.payAmount),
+                overallCycleLimit: Number(formData.overallLimit),
                 fixedExpenses: [
                     { id: 'rent', name: 'Rent', amount: Number(formData.rentAmount) },
+                    { id: 'utilities', name: 'Utilities', amount: Number(formData.utilityAmount) },
                     { id: 'netflix', name: 'Netflix', amount: Number(formData.netflixAmount) }
                 ],
                 categoryLimits: {
@@ -44,7 +51,7 @@ export function Onboarding() {
                     travel: Number(formData.travelLimit),
                     entertainment: Number(formData.entertainmentLimit)
                 },
-                dailyTarget: Number(formData.dailyTarget || 30)
+                dailyTarget: Number(formData.overallLimit / 30)
             });
             completeOnboarding();
         } else {
@@ -59,20 +66,20 @@ export function Onboarding() {
 
     const steps = [
         <WelcomeStep />,
-        <IncomeStep data={formData} update={setFormData} error={error} />,
+        <IncomeStep data={formData} update={setFormData} error={error} transactions={state.transactions} />,
         <ExpensesStep data={formData} update={setFormData} />,
         <GoalsStep data={formData} update={setFormData} />
     ];
 
     return (
         <div style={{
-            height: '100svh', // Use svh for better mobile support
+            height: '100svh',
             display: 'flex',
             flexDirection: 'column',
             padding: 'var(--space-6)',
             maxWidth: 480,
             margin: '0 auto',
-            overflow: 'hidden' // Prevent entire screen from scrolling if contents fit
+            overflow: 'hidden'
         }}>
             {/* Progress Bar */}
             <div style={{ marginBottom: 'var(--space-6)', display: 'flex', gap: 4 }}>
@@ -91,7 +98,6 @@ export function Onboarding() {
                 flex: 1,
                 overflowY: 'auto',
                 paddingBottom: 20,
-                // Hide scrollbar but keep scrollable
                 msOverflowStyle: 'none',
                 scrollbarWidth: 'none',
                 WebkitOverflowScrolling: 'touch'
@@ -109,7 +115,7 @@ export function Onboarding() {
                 gap: 12,
                 marginTop: 'auto',
                 paddingTop: 'var(--space-4)',
-                background: 'var(--bg-app)', // Cover content when scrolling behind
+                background: 'var(--bg-app)',
                 boxShadow: '0 -10px 20px -5px var(--bg-app)'
             }}>
                 {step > 0 && (
@@ -124,42 +130,6 @@ export function Onboarding() {
                 <button onClick={handleNext} className="btn btn-primary" style={{ flex: 1 }}>
                     {step === 3 ? 'Finish Setup' : 'Continue'} <ArrowRight size={18} />
                 </button>
-            </div>
-        </div>
-    );
-}
-
-function AgentsStep() {
-    const { state } = useUser();
-    const agents = Object.values(state.agents || {});
-
-    return (
-        <div>
-            <h2 style={{ fontSize: '1.5rem', marginBottom: 'var(--space-2)' }}>Meet Your Frugal Team</h2>
-            <p className="text-muted" style={{ marginBottom: 'var(--space-8)' }}>
-                These 7 specialized agents work 24/7 to keep you in the green.
-            </p>
-
-            <div className="grid grid-cols-1 gap-3" style={{ maxHeight: '50vh', overflowY: 'auto' }}>
-                {agents.map((agent, idx) => (
-                    <div key={idx} className="card flex items-center gap-4 animate-fade-in" style={{ animationDelay: `${idx * 100}ms` }}>
-                        <div style={{
-                            width: 40, height: 40,
-                            background: agent.color,
-                            borderRadius: '50%',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            fontSize: '1.2rem',
-                            color: 'white',
-                            boxShadow: `0 2px 8px ${agent.color}40`
-                        }}>
-                            {agent.avatar}
-                        </div>
-                        <div>
-                            <div className="font-bold">{agent.name}</div>
-                            <div className="text-xs text-muted">{agent.role}</div>
-                        </div>
-                    </div>
-                ))}
             </div>
         </div>
     );
@@ -189,13 +159,16 @@ function WelcomeStep() {
     );
 }
 
-function IncomeStep({ data, update, error }) {
+function IncomeStep({ data, update, error, transactions }) {
+    // Mock salary-like transactions if date is picked
+    const showSearch = data.nextPayDate !== '';
+
     return (
         <div>
             <h2 style={{ fontSize: '1.25rem', marginBottom: 'var(--space-2)' }}>Income Details</h2>
             <p className="text-sm text-muted" style={{ marginBottom: 'var(--space-6)' }}>Knowing when you get paid helps me calculate your "Safe to Spend" amount.</p>
 
-            <label style={{ display: 'block', marginBottom: 'var(--space-4)' }}>
+            <label style={{ display: 'block', marginBottom: 'var(--space-6)' }}>
                 <span className="text-xs text-muted" style={{ display: 'block', marginBottom: 4 }}>Pay Frequency</span>
                 <div className="flex gap-4">
                     {['biweekly', 'monthly'].map(freq => (
@@ -216,7 +189,7 @@ function IncomeStep({ data, update, error }) {
                 </div>
             </label>
 
-            <label style={{ display: 'block' }}>
+            <label style={{ display: 'block', marginBottom: 'var(--space-6)' }}>
                 <span className="text-xs text-muted" style={{ display: 'block', marginBottom: 4 }}>Next Payday</span>
                 <input
                     type="date"
@@ -234,6 +207,34 @@ function IncomeStep({ data, update, error }) {
                 />
                 {error && <p style={{ color: 'var(--danger)', fontSize: '0.8rem', marginTop: 8, margin: '8px 0 0' }}>{error}</p>}
             </label>
+
+            {showSearch && (
+                <div className="animate-fade-in">
+                    <span className="text-xs text-muted" style={{ display: 'block', marginBottom: 8 }}>Select Pay Amount (from last month)</span>
+                    <div className="flex flex-col gap-2">
+                        {[
+                            { id: 101, title: 'Employer Salary', amount: 3200, date: '2025-12-30' },
+                            { id: 102, title: 'Freelance Payout', amount: 450, date: '2026-01-05' }
+                        ].map(tx => (
+                            <div key={tx.id}
+                                onClick={() => update({ ...data, payAmount: tx.amount })}
+                                className="card flex justify-between items-center"
+                                style={{
+                                    padding: '10px 14px',
+                                    cursor: 'pointer',
+                                    border: data.payAmount === tx.amount ? '1px solid var(--accent-primary)' : '1px solid rgba(230, 230, 224, 0.5)',
+                                    background: data.payAmount === tx.amount ? 'rgba(140, 106, 75, 0.05)' : 'white'
+                                }}>
+                                <div>
+                                    <div className="font-bold text-sm">{tx.title}</div>
+                                    <div className="text-[10px] text-muted">{tx.date}</div>
+                                </div>
+                                <div className="font-bold text-accent">${tx.amount}</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
@@ -242,109 +243,117 @@ function ExpensesStep({ data, update }) {
     return (
         <div>
             <h2 style={{ fontSize: '1.25rem', marginBottom: 'var(--space-2)' }}>Fixed Expenses</h2>
-            <p className="text-sm text-muted" style={{ marginBottom: 'var(--space-6)' }}>I've identified these recurring bills from your history. Are these correct?</p>
+            <p className="text-sm text-muted" style={{ marginBottom: 'var(--space-6)' }}>Confirm your recurring bills. I'll set these aside automatically.</p>
 
             <div className="flex flex-col gap-3">
-                <label className="card flex items-center justify-between" style={{ padding: 10, border: '1px solid rgba(230, 230, 224, 0.5)' }}>
-                    <div className="flex items-center gap-3">
-                        <div style={{ padding: 6, background: 'rgba(255, 99, 71, 0.1)', borderRadius: '50%', color: '#ff6347', display: 'flex' }}>
-                            <Home size={16} />
-                        </div>
-                        <div>
-                            <div className="font-bold text-sm">Rent</div>
-                            <div className="text-[10px] text-muted uppercase tracking-tight">Monthly ~ 1st</div>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <span className="text-muted text-xs">$</span>
-                        <input
-                            type="number"
-                            value={data.rentAmount}
-                            onChange={(e) => update({ ...data, rentAmount: e.target.value })}
-                            style={{ width: 60, background: 'transparent', border: 'none', color: 'var(--text-primary)', textAlign: 'right', fontSize: '0.9rem', fontWeight: 600 }}
-                        />
-                    </div>
-                </label>
-
-                <label className="card flex items-center justify-between" style={{ padding: 10, border: '1px solid rgba(230, 230, 224, 0.5)' }}>
-                    <div className="flex items-center gap-3">
-                        <div style={{ padding: 6, background: 'rgba(50, 200, 255, 0.1)', borderRadius: '50%', color: '#32c8ff', display: 'flex' }}>
-                            <DollarSign size={16} />
-                        </div>
-                        <div>
-                            <div className="font-bold text-sm">Netflix</div>
-                            <div className="text-[10px] text-muted uppercase tracking-tight">Monthly ~ 15th</div>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <span className="text-muted text-xs">$</span>
-                        <input
-                            type="number"
-                            value={data.netflixAmount}
-                            onChange={(e) => update({ ...data, netflixAmount: e.target.value })}
-                            style={{ width: 60, background: 'transparent', border: 'none', color: 'var(--text-primary)', textAlign: 'right', fontSize: '0.9rem', fontWeight: 600 }}
-                        />
-                    </div>
-                </label>
+                <ExpenseRow
+                    icon={<Home size={18} />}
+                    label="Rent"
+                    sub="Monthly ~ 1st"
+                    value={data.rentAmount}
+                    onChange={v => update({ ...data, rentAmount: v })}
+                    color="#ff6347"
+                />
+                <ExpenseRow
+                    icon={<Zap size={18} />}
+                    label="Utilities"
+                    sub="Avg Monthly"
+                    value={data.utilityAmount}
+                    onChange={v => update({ ...data, utilityAmount: v })}
+                    color="#f59e0b"
+                />
+                <ExpenseRow
+                    icon={<DollarSign size={18} />}
+                    label="Netflix"
+                    sub="Monthly ~ 15th"
+                    value={data.netflixAmount}
+                    onChange={v => update({ ...data, netflixAmount: v })}
+                    color="#32c8ff"
+                />
             </div>
         </div>
     );
 }
 
+function ExpenseRow({ icon, label, sub, value, onChange, color }) {
+    return (
+        <label className="card flex items-center justify-between" style={{ padding: 12, border: '1px solid rgba(230, 230, 224, 0.5)' }}>
+            <div className="flex items-center gap-4">
+                <div style={{ padding: 8, background: `${color}1A`, borderRadius: '50%', color: color, display: 'flex' }}>
+                    {icon}
+                </div>
+                <div>
+                    <div className="font-bold text-sm">{label}</div>
+                    <div className="text-[10px] text-muted uppercase tracking-tight">{sub}</div>
+                </div>
+            </div>
+            <div className="flex items-center gap-2">
+                <span className="text-muted text-xs">$</span>
+                <input
+                    type="number"
+                    value={value}
+                    onChange={(e) => onChange(e.target.value)}
+                    style={{ width: 60, background: 'transparent', border: 'none', color: 'var(--text-primary)', textAlign: 'right', fontSize: '0.9rem', fontWeight: 600 }}
+                />
+            </div>
+        </label>
+    );
+}
+
 function GoalsStep({ data, update }) {
+    const recommendedLimit = Math.round(data.payAmount * 0.75);
+    const savingsTarget = data.payAmount - data.overallLimit;
+    const savingsPercent = Math.round((savingsTarget / data.payAmount) * 100);
+
     return (
         <div className="modal-scroll-data">
             <h2 style={{ fontSize: '1.25rem', marginBottom: 'var(--space-2)' }}>Set Targets</h2>
-            <p className="text-sm text-muted" style={{ marginBottom: 'var(--space-6)' }}>Set limits for your key spending categories.</p>
+            <p className="text-sm text-muted" style={{ marginBottom: 'var(--space-6)' }}>How much of your ${data.payAmount} income would you like to limit for spending?</p>
 
-            <LimitSlider
-                icon={<Target size={16} className="text-accent" />}
-                label="Dining & Drinks"
-                value={data.diningLimit}
-                onChange={v => update({ ...data, diningLimit: v })}
-                insight="Based on your income, a $300 limit is healthy."
-            />
+            <div style={{ marginBottom: 'var(--space-8)' }}>
+                <LimitSlider
+                    icon={<Target size={20} className="text-accent" />}
+                    label="Overall Cycle Spending"
+                    value={data.overallLimit}
+                    onChange={v => update({ ...data, overallLimit: v })}
+                    max={Math.round(data.payAmount)}
+                    insight={`A target of $${recommendedLimit} (~75%) allows you to save $${data.payAmount - recommendedLimit} (25%).`}
+                />
 
-            <LimitSlider
-                icon={<Target size={16} color="#ec4899" />}
-                label="Shopping"
-                value={data.shoppingLimit}
-                onChange={v => update({ ...data, shoppingLimit: v })}
-                insight="You spent $205 last month. $200 keeps you on track."
-            />
+                <div className="card" style={{ background: 'var(--accent-glow)', border: 'none', marginTop: -12 }}>
+                    <div className="flex justify-between items-center text-sm">
+                        <span className="font-medium">Estimated Savings</span>
+                        <span className="font-bold text-accent">${savingsTarget} ({savingsPercent}%)</span>
+                    </div>
+                </div>
+            </div>
 
-            <LimitSlider
-                icon={<Target size={16} color="#f59e0b" />}
-                label="Groceries"
-                value={data.groceriesLimit}
-                onChange={v => update({ ...data, groceriesLimit: v })}
-                insight="Avg family spend is $400. Cooking more saves dining costs."
-                max={800}
-            />
+            <div style={{ borderTop: '1px solid #E6E6E0', paddingTop: 'var(--space-6)' }}>
+                <p className="text-xs font-bold text-muted uppercase tracking-wider mb-4">Category Specifics (Optional)</p>
+                <LimitSlider
+                    icon={<Target size={16} color="#F472B6" />}
+                    label="Dining & Drinks"
+                    value={data.diningLimit}
+                    onChange={v => update({ ...data, diningLimit: v })}
+                    insight="Based on your history, $300 is healthy."
+                />
 
-            <LimitSlider
-                icon={<Target size={16} color="#3b82f6" />}
-                label="Transport"
-                value={data.transportLimit}
-                onChange={v => update({ ...data, transportLimit: v })}
-                insight="Includes Gas & Uber. $150 covers your commute."
-            />
+                <LimitSlider
+                    icon={<Target size={16} color="#ec4899" />}
+                    label="Shopping"
+                    value={data.shoppingLimit}
+                    onChange={v => update({ ...data, shoppingLimit: v })}
+                    insight="Avg spend is $205. $200 keeps you on track."
+                />
 
-            <LimitSlider
-                icon={<Target size={16} color="#8b5cf6" />}
-                label="Entertainment"
-                value={data.entertainmentLimit}
-                onChange={v => update({ ...data, entertainmentLimit: v })}
-                insight="Netflix is included here ($15.99). $50 gives room for more."
-            />
-
-            <LimitSlider
-                icon={<Target size={16} color="#10b981" />}
-                label="Travel"
-                value={data.travelLimit}
-                onChange={v => update({ ...data, travelLimit: v })}
-                insight="Set aside $0 if no trips planned, or save up!"
-            />
+                <LimitSlider
+                    icon={<Target size={16} color="#f59e0b" />}
+                    label="Groceries"
+                    value={data.groceriesLimit}
+                    onChange={v => update({ ...data, groceriesLimit: v })}
+                    max={800}
+                />
+            </div>
         </div>
     );
 }
@@ -376,4 +385,5 @@ function LimitSlider({ icon, label, value, onChange, insight, max = 1000 }) {
         </div>
     );
 }
+
 
