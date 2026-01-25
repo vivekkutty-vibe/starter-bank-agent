@@ -52,6 +52,12 @@ export function useAgentChat(initialMessages = []) {
         if (lower.includes('budget for next month')) {
             return "Based on your salary of $3,200 and fixed costs of $1,365, I recommend a **spending limit of $1,400** for next month. This ensures you hit your 25% savings goal.";
         }
+        if (lower.includes('optimize my spending for this specific')) {
+            return "To optimize this cycle, I recommend: \n1. Deferring your $50 'Entertainment' target to next week.\n2. Utilizing your 'Groceries 5% cashback' offer.\n3. Setting a $40 daily cap for the next 4 days.";
+        }
+        if (lower.includes('top 3 highest spending categories')) {
+            return "Your top spending categories this period are:\n1. **Rent/Bills**: $1,200 (62%)\n2. **Groceries**: $310 (16%)\n3. **Dining**: $245 (12%)";
+        }
         if (lower.includes('find hidden costs')) {
             return "Looking at your **Monthly Comparison**, your 'Other' category spiked by $45 due to an automatic renewal for a service you haven't used since November. I recommend canceling to save $540/year.";
         }

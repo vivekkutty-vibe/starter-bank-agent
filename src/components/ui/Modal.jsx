@@ -45,7 +45,7 @@ export function Modal({ isOpen, onClose, children }) {
                 borderTopRightRadius: 'var(--radius-xl)',
                 padding: 'var(--space-6)',
                 position: 'relative',
-                marginBottom: keyboardHeight > 0 ? keyboardHeight + 16 : 0,
+                marginBottom: keyboardHeight > 0 ? keyboardHeight : 0,
                 animation: 'slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
                 overflowY: 'auto',
                 transition: 'margin-bottom 0.2s ease-out, max-height 0.2s ease-out'

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useUser } from '../../lib/UserContext';
-import { ArrowRight, Check, DollarSign, Calendar, Target, Home, Zap } from 'lucide-react';
+import { ArrowRight, Check, DollarSign, Calendar, Target, Home, Zap, AlertCircle } from 'lucide-react';
 
 export function Onboarding() {
     const [step, setStep] = useState(0);

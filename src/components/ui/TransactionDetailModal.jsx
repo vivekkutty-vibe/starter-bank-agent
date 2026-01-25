@@ -47,7 +47,7 @@ export function TransactionDetailModal({ transaction, onClose }) {
                         {/* Status & Date */}
                         <div className="flex justify-between items-center">
                             <div className="flex flex-col">
-                                <span style={{ fontSize: '9px' }} className="text-muted font-bold uppercase tracking-wider">Date & Time</span>
+                                <span className="text-[10px] text-muted font-bold uppercase tracking-wider">Date & Time</span>
                                 <span className="text-sm font-bold">{transaction.date} • 14:32</span>
                             </div>
                             <div className="flex items-center gap-1.5 px-3 py-1 bg-green-50 text-success rounded-full">
@@ -58,17 +58,17 @@ export function TransactionDetailModal({ transaction, onClose }) {
 
                         {/* Amount Section */}
                         <div style={{ borderTop: '1px solid #F1F1F0', paddingTop: '16px' }}>
-                            <span style={{ fontSize: '9px' }} className="text-muted font-bold uppercase tracking-wider">Total Amount</span>
-                            <div className="flex items-center gap-2 mt-1">
+                            <span className="text-[10px] text-muted font-bold uppercase tracking-wider">Total Amount</span>
+                            <div className="flex items-baseline gap-1 mt-1">
                                 <span className="text-3xl font-black">-${transaction.amount.toFixed(2)}</span>
-                                <span className="text-[10px] text-muted font-bold mt-2">USD</span>
+                                <span className="text-xs text-muted font-bold">USD</span>
                             </div>
                         </div>
 
                         {/* Category & Merchant */}
                         <div style={{ borderTop: '1px solid #F1F1F0', paddingTop: '16px' }} className="flex justify-between">
                             <div>
-                                <span style={{ fontSize: '9px' }} className="text-muted font-bold uppercase tracking-wider">Category</span>
+                                <span className="text-[10px] text-muted font-bold uppercase tracking-wider">Category</span>
                                 <div className="flex items-center gap-2 mt-1">
                                     <div style={{ width: 8, height: 8, borderRadius: '50%', background: categoryColor }}></div>
                                     <span className="text-sm font-bold">
@@ -77,7 +77,7 @@ export function TransactionDetailModal({ transaction, onClose }) {
                                 </div>
                             </div>
                             <div style={{ textAlign: 'right' }}>
-                                <span style={{ fontSize: '9px' }} className="text-muted font-bold uppercase tracking-wider">Location</span>
+                                <span className="text-[10px] text-muted font-bold uppercase tracking-wider">Location</span>
                                 <div className="text-sm font-bold mt-1">London, UK</div>
                             </div>
                         </div>

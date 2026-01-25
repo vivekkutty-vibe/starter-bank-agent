@@ -259,7 +259,7 @@ export function ConversationModal({ offer, onClose, onActionComplete }) {
                     </div>
 
                     {/* Footer: Options/Input */}
-                    <div style={{ padding: '16px 24px 24px', background: 'white', borderTop: '1px solid #E6E6E0' }}>
+                    <div style={{ padding: '16px 24px 32px', background: 'white', borderTop: '1px solid #E6E6E0' }}>
                         {!completedMsg ? (
                             <div className="flex flex-col gap-3">
                                 {/* Suggested Actions as Bubbles */}

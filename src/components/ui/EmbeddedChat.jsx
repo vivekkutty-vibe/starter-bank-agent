@@ -187,7 +187,7 @@ export function EmbeddedChat({ contextStarters = [], initialMessage = "How can I
 
             {/* Input Area */}
             <div style={{
-                padding: '16px',
+                padding: '16px 16px 24px 16px',
                 backgroundColor: 'white',
                 borderTop: '1px solid #E6E6E0',
                 borderRadius: '0 0 16px 16px'
