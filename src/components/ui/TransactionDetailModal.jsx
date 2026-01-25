@@ -71,7 +71,9 @@ export function TransactionDetailModal({ transaction, onClose }) {
                                 <span className="text-[10px] text-muted font-bold uppercase">Category</span>
                                 <div className="flex items-center gap-2 mt-1">
                                     <div style={{ width: 8, height: 8, borderRadius: '50%', background: categoryColor }}></div>
-                                    <span className="text-sm font-bold capitalize">{transaction.category}</span>
+                                    <span className="text-sm font-bold">
+                                        {transaction.category.charAt(0).toUpperCase() + transaction.category.slice(1)}
+                                    </span>
                                 </div>
                             </div>
                             <div style={{ textAlign: 'right' }}>

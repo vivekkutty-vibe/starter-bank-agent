@@ -74,7 +74,7 @@ export function ConversationModal({ offer, onClose, onActionComplete }) {
 
     return (
         <Modal isOpen={!!offer} onClose={onClose}>
-            <div className="flex flex-col h-full" style={{ minHeight: '70vh', maxHeight: '85vh', margin: '-24px -24px' }}>
+            <div className="flex flex-col h-full" style={{ minHeight: '70vh', margin: '-24px -24px' }}>
                 {/* Header Container */}
                 <div style={{ padding: '32px 24px 24px', textAlign: 'center' }}>
                     <div style={{
@@ -319,7 +319,12 @@ export function ConversationModal({ offer, onClose, onActionComplete }) {
                                             value={val}
                                             onChange={e => setVal(e.target.value)}
                                             onKeyDown={e => e.key === 'Enter' && handleSend()}
-                                            onFocus={e => e.target.style.borderColor = 'var(--accent-primary)'}
+                                            onFocus={e => {
+                                                e.target.style.borderColor = 'var(--accent-primary)';
+                                                setTimeout(() => {
+                                                    e.target.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                                                }, 300);
+                                            }}
                                             onBlur={e => e.target.style.borderColor = '#E6E6E0'}
                                         />
                                     </div>

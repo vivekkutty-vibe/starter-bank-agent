@@ -37,7 +37,8 @@ export function VisualInsightModal({ isOpen, onClose, type, data, metrics }) {
                             {type === 'cycle' ? 'This Pay Cycle vs Last' :
                                 type === 'monthly' ? 'Spending Trend' :
                                     type === 'savings' ? `Savings Breakdown for ${data?.cycle || 'Cycle'}` :
-                                        `Spending Breakdown for ${data?.cycle || 'this month'}`}
+                                        data?.category ? `Spending Breakdown for ${data.category.charAt(0).toUpperCase() + data.category.slice(1)}` :
+                                            `Spending Breakdown for this month`}
                         </p>
                     </div>
 

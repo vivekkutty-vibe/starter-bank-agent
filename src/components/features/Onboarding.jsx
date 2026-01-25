@@ -32,6 +32,19 @@ export function Onboarding() {
         }
 
         if (step === 3) {
+            const totalCatLimit =
+                Number(formData.diningLimit) +
+                Number(formData.shoppingLimit) +
+                Number(formData.groceriesLimit) +
+                Number(formData.transportLimit) +
+                Number(formData.entertainmentLimit) +
+                Number(formData.travelLimit);
+
+            if (totalCatLimit > Number(formData.overallLimit)) {
+                setError('The sum of your category limits ($' + totalCatLimit + ') exceeds your overall budget ($' + formData.overallLimit + '). Please review your targets.');
+                return;
+            }
+
             // Save data
             updateFinancials({
                 payFrequency: formData.payFrequency,
@@ -355,7 +368,9 @@ function ExpenseRow({ icon, label, sub, value, onChange, color }) {
 
 function GoalsStep({ data, update }) {
     const recommendedLimit = Math.round(data.payAmount * 0.75);
-    const savingsTarget = data.payAmount - data.overallLimit;
+    const rawSavings = data.payAmount - data.overallLimit;
+    // Round to nearest multiple of 5
+    const savingsTarget = Math.round(rawSavings / 5) * 5;
     const savingsPercent = Math.round((savingsTarget / data.payAmount) * 100);
 
     return (
@@ -370,12 +385,12 @@ function GoalsStep({ data, update }) {
                     value={data.overallLimit}
                     onChange={v => update({ ...data, overallLimit: v })}
                     max={Math.round(data.payAmount)}
-                    insight={`A target of $${recommendedLimit} (~75%) allows you to save $${data.payAmount - recommendedLimit} (25%).`}
+                    insight={`A target of $${recommendedLimit} (~75%) allows an approximate saving of $${savingsTarget} (25%).`}
                 />
 
                 <div className="card" style={{ background: 'var(--accent-glow)', border: 'none', marginTop: -12 }}>
                     <div className="flex justify-between items-center text-sm">
-                        <span className="font-medium">Estimated Savings</span>
+                        <span className="font-medium">Approximate Savings</span>
                         <span className="font-bold text-accent">${savingsTarget} ({savingsPercent}%)</span>
                     </div>
                 </div>

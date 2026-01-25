@@ -62,7 +62,7 @@ export function Insights() {
                 <div
                     className="card clickable hover:bg-gray-50 transition-colors cursor-pointer"
                     style={{ flex: 1 }}
-                    onClick={() => openVisual('category')}
+                    onClick={() => openVisual('category', { category: topCategoryName })}
                 >
                     <div className="text-xs flex justify-between" style={{ marginBottom: 'var(--space-4)', color: 'var(--text-secondary)' }}>
                         <span>Top Category</span>
@@ -146,12 +146,12 @@ export function Insights() {
             </div>
 
             {/* Spending Breakdown Preview (Simplified) */}
-            <div className="card" style={{ marginBottom: 'var(--space-6)' }}>
+            <div className="card no-hover" style={{ marginBottom: 'var(--space-6)' }}>
                 <div className="flex justify-between items-center" style={{ marginBottom: 'var(--space-6)' }}>
                     <h3 style={{ fontSize: '1rem', margin: 0 }}>Category Breakdown</h3>
                     <div className="flex gap-2">
                         <button
-                            onClick={() => setTimeRange('this_month')}
+                            onClick={(e) => { e.stopPropagation(); setTimeRange('this_month'); }}
                             style={{
                                 padding: '4px 12px',
                                 fontSize: '0.7rem',
@@ -167,7 +167,7 @@ export function Insights() {
                             This Month
                         </button>
                         <button
-                            onClick={() => setTimeRange('last_month')}
+                            onClick={(e) => { e.stopPropagation(); setTimeRange('last_month'); }}
                             style={{
                                 padding: '4px 12px',
                                 fontSize: '0.7rem',
