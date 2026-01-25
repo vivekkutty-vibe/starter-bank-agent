@@ -8,6 +8,21 @@ export function EmbeddedChat({ contextStarters = [], initialMessage = "How can I
     ]);
     const scrollRef = useRef(null);
     const inputRef = useRef(null);
+    const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
+
+    // Handle Visual Viewport for mobile keyboards
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.visualViewport) {
+                setViewportHeight(window.visualViewport.height);
+            }
+        };
+
+        window.visualViewport?.addEventListener('resize', handleResize);
+        handleResize();
+
+        return () => window.visualViewport?.removeEventListener('resize', handleResize);
+    }, []);
 
     // Auto-scroll to bottom
     useEffect(() => {
@@ -17,7 +32,7 @@ export function EmbeddedChat({ contextStarters = [], initialMessage = "How can I
                 behavior: 'smooth'
             });
         }
-    }, [messages, isTyping]);
+    }, [messages, isTyping, viewportHeight]);
 
     const handleSend = () => {
         if (inputRef.current) {
@@ -226,7 +241,9 @@ export function EmbeddedChat({ contextStarters = [], initialMessage = "How can I
                             onFocus={(e) => {
                                 e.target.style.borderColor = 'var(--accent-primary)';
                                 setTimeout(() => {
-                                    e.target.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                                    if (scrollRef.current) {
+                                        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+                                    }
                                 }, 300);
                             }}
                             onBlur={(e) => e.target.style.borderColor = '#E6E6E0'}

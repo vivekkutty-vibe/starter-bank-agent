@@ -59,9 +59,8 @@ export function TransactionDetailModal({ transaction, onClose }) {
                         {/* Amount Section */}
                         <div style={{ borderTop: '1px solid #F1F1F0', paddingTop: '16px' }}>
                             <span className="text-[10px] text-muted font-bold uppercase tracking-wider">Total Amount</span>
-                            <div className="flex items-baseline gap-1 mt-1">
+                            <div className="mt-1">
                                 <span className="text-3xl font-black">-${transaction.amount.toFixed(2)}</span>
-                                <span className="text-xs text-muted font-bold">USD</span>
                             </div>
                         </div>
 
@@ -78,7 +77,7 @@ export function TransactionDetailModal({ transaction, onClose }) {
                             </div>
                             <div style={{ textAlign: 'right' }}>
                                 <span className="text-[10px] text-muted font-bold uppercase tracking-wider">Location</span>
-                                <div className="text-sm font-bold mt-1">London, UK</div>
+                                <div className="text-sm font-bold mt-1">Brooklyn, NY</div>
                             </div>
                         </div>
                     </div>

@@ -41,7 +41,7 @@ export function Onboarding() {
                 Number(formData.travelLimit);
 
             if (totalCatLimit > Number(formData.overallLimit)) {
-                setError('The sum of your category limits ($' + totalCatLimit + ') exceeds your overall budget ($' + formData.overallLimit + '). Please review your targets.');
+                setError(`It looks like your category limits add up to $${totalCatLimit}, which is a bit more than your overall budget of $${formData.overallLimit}. Could you adjust them so everything balances out?`);
                 return;
             }
 

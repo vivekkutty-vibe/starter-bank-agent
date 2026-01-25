@@ -58,7 +58,7 @@ export function useAgentChat(initialMessages = []) {
         if (lower.includes('top 3 highest spending categories')) {
             return "Your top spending categories this period are:\n1. **Rent/Bills**: $1,200 (62%)\n2. **Groceries**: $310 (16%)\n3. **Dining**: $245 (12%)";
         }
-        if (lower.includes('find hidden costs')) {
+        if (lower.includes('find hidden costs') || lower.includes('recurring costs i can cut')) {
             return "Looking at your **Monthly Comparison**, your 'Other' category spiked by $45 due to an automatic renewal for a service you haven't used since November. I recommend canceling to save $540/year.";
         }
         if (lower.includes('save in')) {

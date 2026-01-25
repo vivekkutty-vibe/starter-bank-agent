@@ -25,9 +25,20 @@ export function SafeSpendModal({ isOpen, onClose }) {
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
             <div className="flex flex-col h-full" style={{ minHeight: '60vh', margin: '-24px -24px' }}>
-                {/* Conversational Header & Chart Content */}
-                <div style={{ padding: '24px 24px 0' }}>
-                    <div style={{ marginBottom: 'var(--space-6)' }}>
+                {/* Conversational Header & Chart Content - Scrollable */}
+                <div style={{
+                    flex: 1,
+                    overflowY: 'auto',
+                    padding: '24px 24px 0',
+                    msOverflowStyle: 'none',
+                    scrollbarWidth: 'none'
+                }}>
+                    <style>{`
+                        div::-webkit-scrollbar {
+                            display: none;
+                        }
+                    `}</style>
+                    <div style={{ marginBottom: 'var(--space-4)' }}>
                         <div style={{
                             background: 'rgba(230, 230, 224, 0.3)',
                             padding: '16px',
@@ -44,7 +55,7 @@ export function SafeSpendModal({ isOpen, onClose }) {
                     </div>
 
                     {/* Day-wise Breakdown Chart */}
-                    <div style={{ marginBottom: 'var(--space-8)' }}>
+                    <div style={{ marginBottom: 'var(--space-4)' }}>
                         <div className="flex justify-between items-end mb-4">
                             <h3 className="text-sm font-bold">Last 7 Days</h3>
                             <div className="flex items-center gap-2 text-xs text-muted">

@@ -32,23 +32,25 @@ export function Modal({ isOpen, onClose, children }) {
             bottom: 0,
             backgroundColor: 'rgba(0,0,0,0.5)',
             display: 'flex',
-            alignItems: 'flex-end',
+            flexDirection: 'column',
+            justifyContent: 'flex-end',
             zIndex: 1000,
             backdropFilter: 'blur(4px)',
-            transition: 'bottom 0.2s cubic-bezier(0.16, 1, 0.3, 1)'
+            height: viewportHeight, // Critical for GlobalChat approach
+            transition: 'height 0.1s ease-out'
         }} onClick={onClose}>
             <div style={{
                 backgroundColor: 'var(--bg-app)',
                 width: '100%',
-                maxHeight: `calc(${viewportHeight} - 20px)`,
+                maxHeight: '90%', // Don't cover entire screen but allow expansion
                 borderTopLeftRadius: 'var(--radius-xl)',
                 borderTopRightRadius: 'var(--radius-xl)',
                 padding: 'var(--space-6)',
                 position: 'relative',
-                marginBottom: keyboardHeight > 0 ? keyboardHeight : 0,
                 animation: 'slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
                 overflowY: 'auto',
-                transition: 'margin-bottom 0.2s ease-out, max-height 0.2s ease-out'
+                display: 'flex',
+                flexDirection: 'column'
             }} onClick={e => e.stopPropagation()}>
 
                 <button onClick={onClose} style={{

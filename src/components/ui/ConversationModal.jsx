@@ -10,42 +10,38 @@ export function ConversationModal({ offer, onClose, onActionComplete }) {
     const scrollRef = useRef(null);
     const { messages, sendMessage, addMessage, isTyping } = useAgentChat([]);
     const [val, setVal] = useState('');
+    const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
+
+    // Handle Visual Viewport for mobile keyboards
+    useEffect(() => {
+        if (!offer) return;
+
+        const handleResize = () => {
+            if (window.visualViewport) {
+                setViewportHeight(window.visualViewport.height);
+            }
+        };
+
+        window.visualViewport?.addEventListener('resize', handleResize);
+        handleResize();
+
+        return () => window.visualViewport?.removeEventListener('resize', handleResize);
+    }, [offer]);
 
     // Reset local state when offer changes/opens
     useEffect(() => {
         if (offer) {
             setCompletedMsg(null);
             setVal('');
-            // Reset chat with base conversation
-            // We need to bypass the hook's state reset by manually setting it if we could, 
-            // but here we can just "re-initialize" effectively by keying or just effect.
-            // Since useAgentChat manages state internal, we need a way to reset it.
-            // For now, simpler: just push the base history on mount if empty? 
-            // Better: Re-mount the component or just handle it. 
-            // Actually, let's just use the hook's messages. 
-            // But we need to CLEAR the hook messages. The hook doesn't export clear.
-            // Let's modify the hook later if needed, but for now we'll just rely on this component remounting?
-            // No, modals might not unmount.
         }
     }, [offer]);
-
-    // HACK: Since we can't easily reset the hook state without exposing a reset function, 
-    // and this modal might not unmount, we should ideally key the component or expose reset.
-    // For this refactor, let's assume valid "on mount" behavior or just map the hook messages locally?
-    // Actually, `useAgentChat` is new per render? No, it uses useState.
-    // Let's assume we can just use it. If we need to reset, we might need to change the hook.
-    // But for now, let's just integrate assuming standard flow.
-
-    // Merge offer conversation with dynamic messages? 
-    // The offer has `conversation` (static history). `useAgentChat` tracks *new* dynamic messages.
-    // So we display: [...offer.conversation, ...messages] (filtering out duplicate initial ones if any)
 
     // Auto-scroll to bottom
     useEffect(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
-    }, [messages, completedMsg, offer]);
+    }, [messages, completedMsg, offer, viewportHeight]);
 
     if (!offer) return null;
 
@@ -322,7 +318,9 @@ export function ConversationModal({ offer, onClose, onActionComplete }) {
                                             onFocus={e => {
                                                 e.target.style.borderColor = 'var(--accent-primary)';
                                                 setTimeout(() => {
-                                                    e.target.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                                                    if (scrollRef.current) {
+                                                        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+                                                    }
                                                 }, 300);
                                             }}
                                             onBlur={e => e.target.style.borderColor = '#E6E6E0'}
