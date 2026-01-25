@@ -8,22 +8,6 @@ export function EmbeddedChat({ contextStarters = [], initialMessage = "How can I
     ]);
     const scrollRef = useRef(null);
     const inputRef = useRef(null);
-    const [viewportHeight, setViewportHeight] = useState('100%');
-
-    // Handle Visual Viewport for mobile keyboards
-    useEffect(() => {
-        const handleResize = () => {
-            if (window.visualViewport) {
-                // We use a percentage or a slightly reduced height to account for modal headers
-                const height = window.visualViewport.height;
-                // If height is significantly smaller than the available modal height, the keyboard is likely up
-                setViewportHeight(`${height * 0.75}px`);
-            }
-        };
-
-        window.visualViewport?.addEventListener('resize', handleResize);
-        return () => window.visualViewport?.removeEventListener('resize', handleResize);
-    }, []);
 
     // Auto-scroll to bottom
     useEffect(() => {
@@ -33,7 +17,7 @@ export function EmbeddedChat({ contextStarters = [], initialMessage = "How can I
                 behavior: 'smooth'
             });
         }
-    }, [messages, isTyping, viewportHeight]);
+    }, [messages, isTyping]);
 
     const handleSend = () => {
         if (inputRef.current) {
@@ -58,9 +42,8 @@ export function EmbeddedChat({ contextStarters = [], initialMessage = "How can I
             backgroundColor: '#FAF9F6',
             marginTop: 'auto',
             borderRadius: '0 0 16px 16px',
-            height: viewportHeight,
-            maxHeight: '500px',
-            transition: 'height 0.2s ease-out'
+            height: '100%',
+            maxHeight: '500px'
         }}>
             {/* Header / Pill */}
             <div style={{
@@ -242,12 +225,9 @@ export function EmbeddedChat({ contextStarters = [], initialMessage = "How can I
                             }}
                             onFocus={(e) => {
                                 e.target.style.borderColor = 'var(--accent-primary)';
-                                // Robust scrolling for mobile keyboards
                                 setTimeout(() => {
                                     e.target.scrollIntoView({ behavior: 'smooth', block: 'end' });
-                                    // Secondary check for iOS
-                                    window.scrollTo(0, 0);
-                                }, 250);
+                                }, 300);
                             }}
                             onBlur={(e) => e.target.style.borderColor = '#E6E6E0'}
                             onKeyDown={e => e.key === 'Enter' && handleSend()}

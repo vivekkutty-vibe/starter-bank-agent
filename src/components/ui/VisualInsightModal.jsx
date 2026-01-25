@@ -182,9 +182,10 @@ function getStarters(type, data) {
 
     // For specific categories
     const category = data?.category || 'this category';
+    const capitalized = category.charAt(0).toUpperCase() + category.slice(1);
     return [
         { label: 'Modify limits', query: 'I want to modify my spending limits.' },
-        { label: 'Show transactions', query: `Show me recent transactions in ${category}.` },
-        { label: `Save in ${category}`, query: `Give me 3 specific tips to reduce my spending in ${category}.` }
+        { label: `Show ${capitalized} transactions`, query: `Show me recent transactions in ${category}.` },
+        { label: `Save in ${capitalized}`, query: `Give me 3 specific tips to reduce my spending in ${category}.` }
     ];
 }

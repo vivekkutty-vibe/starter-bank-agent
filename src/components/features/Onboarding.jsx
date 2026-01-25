@@ -162,21 +162,35 @@ function WelcomeStep() {
 function IncomeStep({ data, update, error }) {
     const showSearch = data.nextPayDate !== '';
 
-    // For this example, we show these two candidates regardless of the date selected
+    // For this example, we show these various candidates with realistic bank strings
     const candidates = [
         {
             id: 101,
-            title: 'Employer Salary',
-            amount: 3200,
+            title: 'BAC/S 7829-PAYROLL P01',
+            amount: 3205.42,
             isLikelySalary: true,
-            note: 'Recurring monthly deposit'
+            note: 'Recurring: Detected monthly for 12 months'
         },
         {
             id: 102,
-            title: 'Freelance Payout',
-            amount: 450,
+            title: 'TFR: STRIPE-PAYOUT-REF92',
+            amount: 450.00,
+            isLikelySalary: false,
+            note: 'Freelance / External transfer'
+        },
+        {
+            id: 103,
+            title: 'DEP: MOBILE CHECK DEP',
+            amount: 150.00,
             isLikelySalary: false,
             note: 'One-time deposit'
+        },
+        {
+            id: 104,
+            title: 'ATM DEP: BRANCH 4492',
+            amount: 80.00,
+            isLikelySalary: false,
+            note: 'Cash deposit'
         }
     ];
 
@@ -390,7 +404,32 @@ function GoalsStep({ data, update }) {
                     label="Groceries"
                     value={data.groceriesLimit}
                     onChange={v => update({ ...data, groceriesLimit: v })}
+                    insight="Weekly shop averages $100. $400 is ideal."
                     max={800}
+                />
+
+                <LimitSlider
+                    icon={<Target size={16} color="#3b82f6" />}
+                    label="Transport"
+                    value={data.transportLimit}
+                    onChange={v => update({ ...data, transportLimit: v })}
+                    insight="Includes Uber and Petrol. $150 covers your commute."
+                />
+
+                <LimitSlider
+                    icon={<Target size={16} color="#8b5cf6" />}
+                    label="Entertainment"
+                    value={data.entertainmentLimit}
+                    onChange={v => update({ ...data, entertainmentLimit: v })}
+                    insight="Includes Netflix and Cinema. $50 keeps it fun."
+                />
+
+                <LimitSlider
+                    icon={<Target size={16} color="#10b981" />}
+                    label="Travel"
+                    value={data.travelLimit}
+                    onChange={v => update({ ...data, travelLimit: v })}
+                    insight="Saving for a trip? Set a budget for your next holiday."
                 />
             </div>
         </div>

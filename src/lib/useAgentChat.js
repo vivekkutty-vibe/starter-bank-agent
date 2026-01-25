@@ -53,7 +53,13 @@ export function useAgentChat(initialMessages = []) {
             return "Based on your salary of $3,200 and fixed costs of $1,365, I recommend a **spending limit of $1,400** for next month. This ensures you hit your 25% savings goal.";
         }
         if (lower.includes('find hidden costs')) {
-            return "I've flagged two $15 subscriptions you haven't used in 60 days. Canceling these would save you **$360 per year**.";
+            return "Looking at your **Monthly Comparison**, your 'Other' category spiked by $45 due to an automatic renewal for a service you haven't used since November. I recommend canceling to save $540/year.";
+        }
+        if (lower.includes('save in')) {
+            if (lower.includes('dining')) return "1. Use your 'Dining Rewards' offer (5% back).\n2. Set a 'Thursday Home-Cook' rule to avoid the mid-week checkout spike.\n3. Limit coffee runs to twice a week.";
+            if (lower.includes('shopping')) return "1. Wait 24 hours before any purchase over $50.\n2. Unsubscribe from marketing emails that trigger impulse buys.\n3. Use 'Pay in 4' only for essential large items.";
+            if (lower.includes('transport')) return "1. Combine errands into one trip.\n2. Check tire pressure to improve fuel efficiency.\n3. Use public transport for city-center trips.";
+            return "I can help with tips for that category. Do you want to see a spending trend first?";
         }
         if (lower.includes('maximize interest')) {
             return "You have $4,500 in a standard savings account (0.1%). Moving this to a **High-Yield Savings account (4.5%)** would earn you an extra **$202 per year**.";
