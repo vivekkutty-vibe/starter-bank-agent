@@ -70,7 +70,12 @@ export function ConversationModal({ offer, onClose, onActionComplete }) {
 
     return (
         <Modal isOpen={!!offer} onClose={onClose}>
-            <div className="flex flex-col h-full" style={{ minHeight: '70vh', margin: '-24px -24px' }}>
+            <div className="flex flex-col" style={{
+                height: `${viewportHeight - 100}px`,
+                maxHeight: '90vh',
+                margin: '-24px -24px',
+                transition: 'height 0.2s ease-out'
+            }}>
                 {/* Header Container */}
                 <div style={{ padding: '32px 24px 24px', textAlign: 'center' }}>
                     <div style={{
@@ -96,7 +101,6 @@ export function ConversationModal({ offer, onClose, onActionComplete }) {
                         borderRadius: '16px',
                         padding: '16px'
                     }}>
-                        <div className="text-xs text-muted mb-3 text-center uppercase tracking-widest font-bold">Context Analysis</div>
                         {offer.widgetType === 'chart' && (
                             <div style={{ textAlign: 'center' }}>
                                 <div style={{ fontSize: '1.5rem', fontWeight: '800', color: 'var(--text-primary)', marginBottom: 4 }}>${offer.amount.toFixed(2)}</div>
@@ -317,7 +321,9 @@ export function ConversationModal({ offer, onClose, onActionComplete }) {
                                             onKeyDown={e => e.key === 'Enter' && handleSend()}
                                             onFocus={e => {
                                                 e.target.style.borderColor = 'var(--accent-primary)';
+                                                // Scroll input into view when keyboard appears
                                                 setTimeout(() => {
+                                                    e.target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                                                     if (scrollRef.current) {
                                                         scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
                                                     }

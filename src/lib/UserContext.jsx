@@ -112,7 +112,7 @@ const INITIAL_STATE = {
             priority: 10,
             amount: 0,
             savings: 35.00,
-            statValue: '$35 Saved',
+            statValue: 'Save $35',
             statLabel: 'Overdraft Fee Avoided',
             description: 'Checking account balance is low.',
             conversation: [

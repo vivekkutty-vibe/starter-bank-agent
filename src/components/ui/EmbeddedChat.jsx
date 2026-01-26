@@ -240,7 +240,9 @@ export function EmbeddedChat({ contextStarters = [], initialMessage = "How can I
                             }}
                             onFocus={(e) => {
                                 e.target.style.borderColor = 'var(--accent-primary)';
+                                // Scroll input into view when keyboard appears
                                 setTimeout(() => {
+                                    e.target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                                     if (scrollRef.current) {
                                         scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
                                     }

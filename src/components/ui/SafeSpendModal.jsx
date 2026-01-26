@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Modal } from './Modal';
 import { useUser } from '../../lib/UserContext';
 import { TrendingUp, TrendingDown, HelpCircle, AlertCircle } from 'lucide-react';
@@ -6,6 +7,23 @@ import { EmbeddedChat } from './EmbeddedChat';
 export function SafeSpendModal({ isOpen, onClose }) {
     const { state } = useUser();
     const dailyTarget = state.financials.dailyTarget || 30;
+    const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
+
+    // Handle Visual Viewport for mobile keyboards
+    useEffect(() => {
+        if (!isOpen) return;
+
+        const handleResize = () => {
+            if (window.visualViewport) {
+                setViewportHeight(window.visualViewport.height);
+            }
+        };
+
+        window.visualViewport?.addEventListener('resize', handleResize);
+        handleResize();
+
+        return () => window.visualViewport?.removeEventListener('resize', handleResize);
+    }, [isOpen]);
 
     // Mock daily data for the chart
     const dailySpend = [
@@ -24,7 +42,12 @@ export function SafeSpendModal({ isOpen, onClose }) {
 
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
-            <div className="flex flex-col h-full" style={{ minHeight: '60vh', margin: '-24px -24px' }}>
+            <div className="flex flex-col" style={{
+                height: `${viewportHeight - 100}px`,
+                maxHeight: '90vh',
+                margin: '-24px -24px',
+                transition: 'height 0.2s ease-out'
+            }}>
                 {/* Conversational Header & Chart Content - Scrollable */}
                 <div style={{
                     flex: 1,

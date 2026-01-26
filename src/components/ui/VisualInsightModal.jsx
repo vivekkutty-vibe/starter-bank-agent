@@ -1,8 +1,27 @@
+import { useState, useEffect } from 'react';
 import { Modal } from './Modal';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 import { EmbeddedChat } from './EmbeddedChat';
 
 export function VisualInsightModal({ isOpen, onClose, type, data, metrics }) {
+    const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
+
+    // Handle Visual Viewport for mobile keyboards
+    useEffect(() => {
+        if (!isOpen) return;
+
+        const handleResize = () => {
+            if (window.visualViewport) {
+                setViewportHeight(window.visualViewport.height);
+            }
+        };
+
+        window.visualViewport?.addEventListener('resize', handleResize);
+        handleResize();
+
+        return () => window.visualViewport?.removeEventListener('resize', handleResize);
+    }, [isOpen]);
+
     if (!isOpen) return null;
 
     return (
@@ -10,8 +29,10 @@ export function VisualInsightModal({ isOpen, onClose, type, data, metrics }) {
             <div style={{
                 display: 'flex',
                 flexDirection: 'column',
-                height: 'calc(85vh - 48px)', // Modal maxHeight 85vh minus some buffer
-                margin: '-24px -24px'
+                height: `${viewportHeight - 100}px`,
+                maxHeight: '90vh',
+                margin: '-24px -24px',
+                transition: 'height 0.2s ease-out'
             }}>
                 {/* Header & Scrollable Data Section */}
                 <div style={{
