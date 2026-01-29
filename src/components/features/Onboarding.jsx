@@ -20,7 +20,11 @@ export function Onboarding() {
         transportLimit: '150',
         groceriesLimit: '400',
         travelLimit: '0',
-        entertainmentLimit: '50'
+        entertainmentLimit: '50',
+        goalType: 'percentage', // 'percentage' or 'target'
+        goalPercentage: 15,
+        goalTargetAmount: 2000,
+        goalTargetMonths: 6
     });
 
     const handleNext = () => {
@@ -31,7 +35,7 @@ export function Onboarding() {
             return;
         }
 
-        if (step === 3) {
+        if (step === 4) {
             const totalCatLimit =
                 Number(formData.diningLimit) +
                 Number(formData.shoppingLimit) +
@@ -81,7 +85,8 @@ export function Onboarding() {
         <WelcomeStep />,
         <IncomeStep data={formData} update={setFormData} error={error} transactions={state.transactions} />,
         <ExpensesStep data={formData} update={setFormData} />,
-        <GoalsStep data={formData} update={setFormData} />
+        <GoalIntakeStep data={formData} update={setFormData} />,
+        <BudgetLimitStep data={formData} update={setFormData} />
     ];
 
     return (
@@ -96,7 +101,7 @@ export function Onboarding() {
         }}>
             {/* Progress Bar */}
             <div style={{ marginBottom: 'var(--space-6)', display: 'flex', gap: 4 }}>
-                {[0, 1, 2, 3].map(i => (
+                {[0, 1, 2, 3, 4].map(i => (
                     <div key={i} style={{
                         flex: 1,
                         height: 4,
@@ -159,7 +164,7 @@ export function Onboarding() {
                         </button>
                     )}
                     <button onClick={handleNext} className="btn btn-primary" style={{ flex: 1 }}>
-                        {step === 3 ? 'Finish Setup' : 'Continue'} <ArrowRight size={18} />
+                        {step === 4 ? 'Finish Setup' : 'Continue'} <ArrowRight size={18} />
                     </button>
                 </div>
             </div>
@@ -388,32 +393,135 @@ function ExpenseRow({ icon, label, sub, value, onChange, color }) {
     );
 }
 
-function GoalsStep({ data, update }) {
-    const recommendedLimit = Math.round(data.payAmount * 0.75);
-    const rawSavings = data.payAmount - data.overallLimit;
-    // Round to nearest multiple of 5
-    const savingsTarget = Math.round(rawSavings / 5) * 5;
-    const savingsPercent = Math.round((savingsTarget / data.payAmount) * 100);
+function GoalIntakeStep({ data, update }) {
+    return (
+        <div>
+            <h2 style={{ fontSize: '1.25rem', marginBottom: 'var(--space-2)' }}>Financial Goal</h2>
+            <p className="text-sm text-muted" style={{ marginBottom: 'var(--space-6)' }}>What are we working towards? I'll use this to optimize your budget.</p>
+
+            <div className="flex flex-col gap-4">
+                <button
+                    onClick={() => update({ ...data, goalType: 'percentage' })}
+                    className="card"
+                    style={{
+                        padding: '16px',
+                        textAlign: 'left',
+                        borderColor: data.goalType === 'percentage' ? 'var(--accent-primary)' : 'rgba(230, 230, 224, 0.5)',
+                        background: data.goalType === 'percentage' ? 'rgba(140, 106, 75, 0.05)' : 'white'
+                    }}
+                >
+                    <div className="flex justify-between items-start mb-2">
+                        <div className="font-bold">Save % of Income</div>
+                        <div style={{ color: 'var(--accent-primary)' }}>{data.goalType === 'percentage' && <Check size={18} />}</div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <input
+                            type="range"
+                            min="5" max="50" step="5"
+                            value={data.goalPercentage}
+                            onChange={(e) => update({ ...data, goalPercentage: Number(e.target.value), goalType: 'percentage' })}
+                            style={{ flex: 1, accentColor: 'var(--accent-primary)' }}
+                        />
+                        <span className="font-bold text-accent" style={{ minWidth: 40 }}>{data.goalPercentage}%</span>
+                    </div>
+                    <p className="text-[10px] text-muted mt-2">Recommended: 15-20% for a healthy safety net.</p>
+                </button>
+
+                <button
+                    onClick={() => update({ ...data, goalType: 'target' })}
+                    className="card"
+                    style={{
+                        padding: '16px',
+                        textAlign: 'left',
+                        borderColor: data.goalType === 'target' ? 'var(--accent-primary)' : 'rgba(230, 230, 224, 0.5)',
+                        background: data.goalType === 'target' ? 'rgba(140, 106, 75, 0.05)' : 'white'
+                    }}
+                >
+                    <div className="flex justify-between items-start mb-4">
+                        <div className="font-bold">Save specific amount</div>
+                        <div style={{ color: 'var(--accent-primary)' }}>{data.goalType === 'target' && <Check size={18} />}</div>
+                    </div>
+
+                    <div className="flex flex-col gap-4">
+                        <div className="flex items-center justify-between">
+                            <span className="text-xs text-muted">Target Amount</span>
+                            <div className="flex items-center gap-1">
+                                <span className="text-xs">$</span>
+                                <input
+                                    type="number"
+                                    value={data.goalTargetAmount}
+                                    onChange={(e) => update({ ...data, goalTargetAmount: Number(e.target.value), goalType: 'target' })}
+                                    style={{ width: 80, border: '1px solid #E6E6E0', borderRadius: 4, padding: '4px 8px', fontSize: '0.9rem' }}
+                                />
+                            </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <span className="text-xs text-muted">In how many months?</span>
+                            <div className="flex items-center gap-1">
+                                <input
+                                    type="number"
+                                    value={data.goalTargetMonths}
+                                    onChange={(e) => update({ ...data, goalTargetMonths: Number(e.target.value), goalType: 'target' })}
+                                    style={{ width: 50, border: '1px solid #E6E6E0', borderRadius: 4, padding: '4px 8px', fontSize: '0.9rem' }}
+                                />
+                                <span className="text-xs">months</span>
+                            </div>
+                        </div>
+                        {data.goalType === 'target' && (
+                            <div style={{ background: 'var(--bg-app)', padding: '8px 12px', borderRadius: 8 }}>
+                                <p className="text-[10px] text-accent font-bold m-0 text-center">
+                                    That's approximately ${Math.round(data.goalTargetAmount / data.goalTargetMonths)} per month.
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                </button>
+            </div>
+        </div>
+    );
+}
+
+function BudgetLimitStep({ data, update }) {
+    // Optimization Logic
+    const fixedTotal = Number(data.rentAmount) + Number(data.utilityAmount) + Number(data.netflixAmount);
+
+    let monthlyGoalSaving = 0;
+    if (data.goalType === 'percentage') {
+        monthlyGoalSaving = Math.round(data.payAmount * (data.goalPercentage / 100));
+    } else {
+        monthlyGoalSaving = Math.round(data.goalTargetAmount / data.goalTargetMonths);
+    }
+
+    // available = income - fixed - goal
+    const availableBudget = data.payAmount - fixedTotal - monthlyGoalSaving;
+    const recommendedLimit = Math.max(0, Math.floor(availableBudget / 10) * 10);
+
+    // If overallLimit hasn't been set by user yet, or if it's still at default, suggest the recommended one
+    // But we'll just show the recommendation in the insight.
+
+    const savingsPercent = Math.round((monthlyGoalSaving / data.payAmount) * 100);
 
     return (
         <div className="modal-scroll-data" style={{ paddingBottom: '40px' }}>
-            <h2 style={{ fontSize: '1.25rem', marginBottom: 'var(--space-2)' }}>Set Targets</h2>
-            <p className="text-sm text-muted" style={{ marginBottom: 'var(--space-6)' }}>How much of your ${data.payAmount} income would you like to limit for spending?</p>
+            <h2 style={{ fontSize: '1.25rem', marginBottom: 'var(--space-2)' }}>Set Budget</h2>
+            <p className="text-sm text-muted" style={{ marginBottom: 'var(--space-6)' }}>
+                Based on your goal, you have <strong>${availableBudget >= 0 ? availableBudget : 0}</strong> left for flexible spending.
+            </p>
 
             <div style={{ marginBottom: 'var(--space-8)' }}>
                 <LimitSlider
                     icon={<Target size={20} className="text-accent" />}
-                    label="Overall Cycle Spending"
+                    label="Overall Spending Limit"
                     value={data.overallLimit}
                     onChange={v => update({ ...data, overallLimit: v })}
                     max={Math.round(data.payAmount)}
-                    insight={`A target of $${recommendedLimit} (~75%) allows an approximate saving of $${savingsTarget} (25%).`}
+                    insight={`To hit your goal of $${monthlyGoalSaving}/mo, try staying under $${recommendedLimit} for other spending.`}
                 />
 
                 <div className="card" style={{ background: 'var(--accent-glow)', border: 'none', marginTop: -12 }}>
                     <div className="flex justify-between items-center text-sm">
-                        <span className="font-medium">Approximate Savings</span>
-                        <span className="font-bold text-accent">${savingsTarget} ({savingsPercent}%)</span>
+                        <span className="font-medium">Monthly Goal Saving</span>
+                        <span className="font-bold text-accent">${monthlyGoalSaving} ({savingsPercent}%)</span>
                     </div>
                 </div>
             </div>
