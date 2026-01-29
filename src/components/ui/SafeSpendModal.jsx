@@ -1,9 +1,10 @@
-import { Modal } from './Modal';
+import { Modal, useKeyboard } from './Modal';
 import { useUser } from '../../lib/UserContext';
 import { TrendingUp, TrendingDown, HelpCircle, AlertCircle } from 'lucide-react';
 import { EmbeddedChat } from './EmbeddedChat';
 
 export function SafeSpendModal({ isOpen, onClose }) {
+    const isKeyboardUp = useKeyboard();
     const { state } = useUser();
     const dailyTarget = state.financials.dailyTarget || 30;
 
@@ -31,25 +32,26 @@ export function SafeSpendModal({ isOpen, onClose }) {
             }}>
                 {/* Header Container - Fixed at top */}
                 <div style={{
-                    padding: '24px 24px 16px',
-                    textAlign: 'center',
+                    padding: isKeyboardUp ? '12px 24px' : '24px 24px 16px',
+                    textAlign: isKeyboardUp ? 'left' : 'center',
                     borderBottom: '1px solid #E6E6E0',
                     background: 'white',
                     flexShrink: 0
                 }}>
-                    <h2 style={{ fontSize: '1.1rem', margin: 0, color: 'var(--text-primary)' }}>Safe to Spend</h2>
-                    <p className="text-xs text-muted uppercase tracking-wider font-bold" style={{ marginTop: 2 }}>Daily Analysis</p>
+                    <h2 style={{ fontSize: isKeyboardUp ? '0.95rem' : '1.1rem', margin: 0, color: 'var(--text-primary)', fontWeight: '800' }}>Safe to Spend</h2>
+                    {!isKeyboardUp && <p className="text-xs text-muted uppercase tracking-wider font-bold" style={{ marginTop: 2 }}>Daily Analysis</p>}
                 </div>
 
-                {/* Main Content: Scrollable Area */}
-                <div style={{
-                    flex: 1,
-                    overflowY: 'auto',
-                    background: '#FAF9F6',
-                    display: 'flex',
-                    flexDirection: 'column'
-                }}>
-                    <div style={{ padding: '24px' }}>
+                {/* Integrated Scroll Area (via EmbeddedChat) */}
+                <div style={{ flex: 1, overflow: 'hidden' }}>
+                    <EmbeddedChat
+                        contextStarters={[
+                            { label: 'Compare to last week', query: 'How does this week compare to last week?' },
+                            { label: 'Can I spend $50?', query: 'Can I afford to spend $50 right now?' },
+                            { label: 'Show big expenses', query: 'Show me my biggest expenses recently.' }
+                        ]}
+                        initialMessage="I've analyzed your daily spending. Want to see how it compares to your target?"
+                    >
                         <div style={{ marginBottom: 'var(--space-4)' }}>
                             <div style={{
                                 background: 'white',
@@ -60,24 +62,24 @@ export function SafeSpendModal({ isOpen, onClose }) {
                                 border: '1px solid #E6E6E0',
                                 boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
                             }}>
-                                <p style={{ margin: 0, fontSize: '1rem', lineHeight: '1.5' }}>
+                                <p style={{ margin: 0, fontSize: '0.95rem', lineHeight: '1.5' }}>
                                     Here is your spending breakdown for the last 7 days. You've been doing well, but Tuesday was a bit high.
                                 </p>
                             </div>
-                            <span className="text-xs text-muted ml-1">Agent • Just now</span>
+                            <span className="text-[10px] text-muted ml-1">Agent • Just now</span>
                         </div>
 
                         {/* Day-wise Breakdown Chart */}
-                        <div style={{ marginBottom: 'var(--space-4)' }}>
+                        <div style={{ marginBottom: 'var(--space-2)' }}>
                             <div className="flex justify-between items-end mb-4">
-                                <h3 className="text-sm font-bold">Last 7 Days</h3>
-                                <div className="flex items-center gap-2 text-xs text-muted">
-                                    <div style={{ width: 12, height: 2, background: '#9ca3af', borderTop: '1px dashed #9ca3af' }}></div>
+                                <h3 className="text-xs font-bold">Last 7 Days</h3>
+                                <div className="flex items-center gap-2 text-[10px] text-muted">
+                                    <div style={{ width: 10, height: 1, background: '#9ca3af', borderTop: '1px dashed #9ca3af' }}></div>
                                     Target: ${dailyTarget}
                                 </div>
                             </div>
 
-                            <div style={{ position: 'relative', height: '140px', borderLeft: '1px solid #e5e7eb', borderBottom: '1px solid #e5e7eb', marginLeft: '20px' }}>
+                            <div style={{ position: 'relative', height: '100px', borderLeft: '1px solid #e5e7eb', borderBottom: '1px solid #e5e7eb', marginLeft: '20px' }}>
                                 <div style={{
                                     position: 'absolute',
                                     bottom: `${Math.min((dailyTarget / displayMax) * 100, 100)}%`,
@@ -87,7 +89,7 @@ export function SafeSpendModal({ isOpen, onClose }) {
                                     zIndex: 1
                                 }}></div>
 
-                                <div style={{ position: 'absolute', left: '-30px', top: 0, bottom: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', fontSize: '10px', color: '#9ca3af' }}>
+                                <div style={{ position: 'absolute', left: '-25px', top: 0, bottom: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', fontSize: '9px', color: '#9ca3af' }}>
                                     <span>${displayMax}</span>
                                     <span>$0</span>
                                 </div>
@@ -95,9 +97,9 @@ export function SafeSpendModal({ isOpen, onClose }) {
                                 <div style={{
                                     display: 'grid',
                                     gridTemplateColumns: 'repeat(7, 1fr)',
-                                    gap: '8px',
+                                    gap: '6px',
                                     height: '100%',
-                                    padding: '0 8px',
+                                    padding: '0 4px',
                                     position: 'relative',
                                     zIndex: 2
                                 }}>
@@ -110,8 +112,8 @@ export function SafeSpendModal({ isOpen, onClose }) {
                                                     width: '100%',
                                                     height: `${pct}%`,
                                                     backgroundColor: isOver ? 'var(--accent-primary)' : 'var(--accent-secondary)',
-                                                    borderRadius: '4px 4px 0 0',
-                                                    minHeight: '4px',
+                                                    borderRadius: '3px 3px 0 0',
+                                                    minHeight: '2px',
                                                     transition: 'height 0.3s ease'
                                                 }}></div>
                                             </div>
@@ -122,27 +124,16 @@ export function SafeSpendModal({ isOpen, onClose }) {
                             <div style={{
                                 display: 'grid',
                                 gridTemplateColumns: 'repeat(7, 1fr)',
-                                gap: '8px',
-                                padding: '0 8px',
-                                marginTop: '8px'
+                                gap: '6px',
+                                padding: '0 4px',
+                                marginTop: '6px'
                             }}>
                                 {dailySpend.map((item) => (
-                                    <span key={item.day} className="text-xs text-muted text-center">{item.day}</span>
+                                    <span key={item.day} className="text-[9px] text-muted text-center">{item.day}</span>
                                 ))}
                             </div>
                         </div>
-                    </div>
-
-                    <div style={{ marginTop: 'auto' }}>
-                        <EmbeddedChat
-                            contextStarters={[
-                                { label: 'Compare to last week', query: 'How does this week compare to last week?' },
-                                { label: 'Can I spend $50?', query: 'Can I afford to spend $50 right now?' },
-                                { label: 'Show big expenses', query: 'Show me my biggest expenses recently.' }
-                            ]}
-                            initialMessage="I've analyzed your daily spending. Want to see how it compares to your target?"
-                        />
-                    </div>
+                    </EmbeddedChat>
                 </div>
             </div>
         </Modal>

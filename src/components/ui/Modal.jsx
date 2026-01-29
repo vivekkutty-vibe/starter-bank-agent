@@ -1,5 +1,8 @@
 import { X } from 'lucide-react';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, createContext, useContext } from 'react';
+
+const KeyboardContext = createContext(false);
+export const useKeyboard = () => useContext(KeyboardContext);
 
 export function Modal({ isOpen, onClose, children }) {
     const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
@@ -102,7 +105,9 @@ export function Modal({ isOpen, onClose, children }) {
                     <X size={20} color="var(--text-muted)" />
                 </button>
 
-                {children}
+                <KeyboardContext.Provider value={isKeyboardUp}>
+                    {children}
+                </KeyboardContext.Provider>
             </div>
             <style>{`
         @keyframes slideUp {

@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { useUser } from '../../lib/UserContext';
-import { Modal } from './Modal';
+import { Modal, useKeyboard } from './Modal';
 import { CheckCircle, Bot, Send, Sparkles } from 'lucide-react';
 import { useAgentChat } from '../../lib/useAgentChat';
 
 export function ConversationModal({ offer, onClose, onActionComplete }) {
+    const isKeyboardUp = useKeyboard();
     const { state } = useUser();
     const [completedMsg, setCompletedMsg] = useState(null);
     const scrollRef = useRef(null);
@@ -59,20 +60,34 @@ export function ConversationModal({ offer, onClose, onActionComplete }) {
                 background: 'var(--bg-app)'
             }}>
                 {/* Header Container - Fixed at top */}
-                <div style={{ padding: '24px 24px 16px', textAlign: 'center', borderBottom: '1px solid #E6E6E0', background: 'white', flexShrink: 0 }}>
-                    <div style={{
-                        width: 48, height: 48,
-                        background: 'var(--accent-primary)',
-                        borderRadius: '50%',
-                        margin: '0 auto 8px',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        color: 'white',
-                        boxShadow: `0 4px 12px var(--accent-glow)`
-                    }}>
-                        <Bot size={24} />
+                <div style={{
+                    padding: isKeyboardUp ? '12px 24px' : '24px 24px 16px',
+                    textAlign: isKeyboardUp ? 'left' : 'center',
+                    borderBottom: '1px solid #E6E6E0',
+                    background: 'white',
+                    flexShrink: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    justifyContent: isKeyboardUp ? 'flex-start' : 'center',
+                    flexDirection: isKeyboardUp ? 'row' : 'column'
+                }}>
+                    {!isKeyboardUp && (
+                        <div style={{
+                            width: 48, height: 48,
+                            background: 'var(--accent-primary)',
+                            borderRadius: '50%',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            color: 'white',
+                            boxShadow: `0 4px 12px var(--accent-glow)`
+                        }}>
+                            <Bot size={24} />
+                        </div>
+                    )}
+                    <div style={{ textAlign: isKeyboardUp ? 'left' : 'center' }}>
+                        <h2 style={{ fontSize: isKeyboardUp ? '0.95rem' : '1.1rem', margin: 0, color: 'var(--text-primary)', fontWeight: '800' }}>{agent.name}</h2>
+                        {!isKeyboardUp && <p className="text-xs text-muted uppercase tracking-wider font-bold" style={{ marginTop: 2 }}>{agent.role}</p>}
                     </div>
-                    <h2 style={{ fontSize: '1.1rem', margin: 0, color: 'var(--text-primary)' }}>{agent.name}</h2>
-                    <p className="text-xs text-muted uppercase tracking-wider font-bold" style={{ marginTop: 2 }}>{agent.role}</p>
                 </div>
 
                 {/* Main Content: Scrollable Area */}
