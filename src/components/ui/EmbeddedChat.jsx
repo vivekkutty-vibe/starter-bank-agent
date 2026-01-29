@@ -8,21 +8,6 @@ export function EmbeddedChat({ contextStarters = [], initialMessage = "How can I
     ]);
     const scrollRef = useRef(null);
     const inputRef = useRef(null);
-    const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
-
-    // Handle Visual Viewport for mobile keyboards
-    useEffect(() => {
-        const handleResize = () => {
-            if (window.visualViewport) {
-                setViewportHeight(window.visualViewport.height);
-            }
-        };
-
-        window.visualViewport?.addEventListener('resize', handleResize);
-        handleResize();
-
-        return () => window.visualViewport?.removeEventListener('resize', handleResize);
-    }, []);
 
     // Auto-scroll to bottom
     useEffect(() => {
@@ -32,7 +17,7 @@ export function EmbeddedChat({ contextStarters = [], initialMessage = "How can I
                 behavior: 'smooth'
             });
         }
-    }, [messages, isTyping, viewportHeight]);
+    }, [messages, isTyping]);
 
     const handleSend = () => {
         if (inputRef.current) {
@@ -58,7 +43,7 @@ export function EmbeddedChat({ contextStarters = [], initialMessage = "How can I
             marginTop: 'auto',
             borderRadius: '0 0 16px 16px',
             height: '100%',
-            maxHeight: '500px'
+            overflow: 'hidden'
         }}>
             {/* Header / Pill */}
             <div style={{
@@ -66,7 +51,9 @@ export function EmbeddedChat({ contextStarters = [], initialMessage = "How can I
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                borderBottom: '1px solid rgba(230, 230, 224, 0.5)'
+                borderBottom: '1px solid rgba(230, 230, 224, 0.5)',
+                background: 'white',
+                flexShrink: 0
             }}>
                 <Sparkles size={14} style={{ color: 'var(--accent-primary)' }} />
                 <span style={{
@@ -88,13 +75,11 @@ export function EmbeddedChat({ contextStarters = [], initialMessage = "How can I
                     display: 'flex',
                     flexDirection: 'column',
                     gap: '12px',
-                    minHeight: '200px',
-                    msOverflowStyle: 'none',
-                    scrollbarWidth: 'none'
+                    minHeight: '160px',
+                    background: '#FAF9F6'
                 }}
             >
-                <style>{`.chat-area::-webkit-scrollbar { display: none; }`}</style>
-                <div className="chat-area">
+                <div>
                     {messages.map((msg, idx) => (
                         <div key={idx} style={{
                             display: 'flex',
@@ -170,11 +155,12 @@ export function EmbeddedChat({ contextStarters = [], initialMessage = "How can I
             {/* Conversation Starters (User Bubbles) */}
             {contextStarters.length > 0 && messages.length < 3 && (
                 <div style={{
-                    padding: '0 16px 16px',
+                    padding: '0 16px 12px',
                     display: 'flex',
                     flexDirection: 'column',
                     gap: '8px',
-                    alignItems: 'flex-end'
+                    alignItems: 'flex-end',
+                    background: '#FAF9F6'
                 }}>
                     {contextStarters.map((starter, idx) => (
                         <button
@@ -182,9 +168,9 @@ export function EmbeddedChat({ contextStarters = [], initialMessage = "How can I
                             onClick={() => handleStarterClick(starter)}
                             className="interactive-bar"
                             style={{
-                                fontSize: '0.875rem',
-                                padding: '8px 16px',
-                                borderRadius: '16px 16px 4px 16px',
+                                fontSize: '0.8125rem',
+                                padding: '8px 14px',
+                                borderRadius: '12px 12px 4px 12px',
                                 border: 'none',
                                 backgroundColor: 'var(--accent-primary)',
                                 color: 'white',
@@ -202,10 +188,10 @@ export function EmbeddedChat({ contextStarters = [], initialMessage = "How can I
 
             {/* Input Area */}
             <div style={{
-                padding: '16px 16px 24px 16px',
+                padding: '12px 16px calc(20px + env(safe-area-inset-bottom))',
                 backgroundColor: 'white',
                 borderTop: '1px solid #E6E6E0',
-                borderRadius: '0 0 16px 16px'
+                flexShrink: 0
             }}>
                 <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                     <div style={{ flex: 1, position: 'relative', display: 'flex', alignItems: 'center' }}>
@@ -234,15 +220,13 @@ export function EmbeddedChat({ contextStarters = [], initialMessage = "How can I
                                 borderRadius: '24px',
                                 border: '1px solid #E6E6E0',
                                 outline: 'none',
-                                fontSize: '0.875rem',
+                                fontSize: '16px', // Prevents iOS auto-zoom
                                 color: 'var(--text-primary)',
-                                backgroundColor: '#FFFFFF'
+                                backgroundColor: '#F9F9F7'
                             }}
                             onFocus={(e) => {
                                 e.target.style.borderColor = 'var(--accent-primary)';
-                                // Scroll input into view when keyboard appears
                                 setTimeout(() => {
-                                    e.target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                                     if (scrollRef.current) {
                                         scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
                                     }

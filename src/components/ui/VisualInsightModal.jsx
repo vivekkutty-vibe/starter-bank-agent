@@ -1,27 +1,8 @@
-import { useState, useEffect } from 'react';
 import { Modal } from './Modal';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 import { EmbeddedChat } from './EmbeddedChat';
 
 export function VisualInsightModal({ isOpen, onClose, type, data, metrics }) {
-    const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
-
-    // Handle Visual Viewport for mobile keyboards
-    useEffect(() => {
-        if (!isOpen) return;
-
-        const handleResize = () => {
-            if (window.visualViewport) {
-                setViewportHeight(window.visualViewport.height);
-            }
-        };
-
-        window.visualViewport?.addEventListener('resize', handleResize);
-        handleResize();
-
-        return () => window.visualViewport?.removeEventListener('resize', handleResize);
-    }, [isOpen]);
-
     if (!isOpen) return null;
 
     return (
@@ -29,42 +10,40 @@ export function VisualInsightModal({ isOpen, onClose, type, data, metrics }) {
             <div style={{
                 display: 'flex',
                 flexDirection: 'column',
-                height: `${viewportHeight - 100}px`,
-                maxHeight: '90vh',
-                margin: '-24px -24px',
-                transition: 'height 0.2s ease-out'
+                height: '100%',
+                background: 'var(--bg-app)',
+                overflow: 'hidden'
             }}>
-                {/* Header & Scrollable Data Section */}
+                {/* Header Container - Fixed at top */}
+                <div style={{
+                    padding: '24px 24px 16px',
+                    textAlign: 'center',
+                    borderBottom: '1px solid #E6E6E0',
+                    background: 'white',
+                    flexShrink: 0
+                }}>
+                    <h2 style={{ fontSize: '1.1rem', margin: '0 0 4px 0' }}>
+                        {type === 'cycle' ? 'Cycle Comparison' :
+                            type === 'monthly' ? 'Monthly Comparison' :
+                                type === 'savings' ? 'Savings Breakdown' :
+                                    data?.category ? `${data.category.charAt(0).toUpperCase() + data.category.slice(1)} Breakdown` : 'Category Breakdown'}
+                    </h2>
+                    <p className="text-sm text-muted">
+                        {type === 'cycle' ? 'This Pay Cycle vs Last' :
+                            type === 'monthly' ? 'Spending Trend' :
+                                type === 'savings' ? `Savings Breakdown for ${data?.cycle || 'Cycle'}` :
+                                    data?.category ? `Spending Breakdown for ${data.category.charAt(0).toUpperCase() + data.category.slice(1)}` :
+                                        `Spending Breakdown for this month`}
+                    </p>
+                </div>
+
+                {/* Main Content: Scrollable Area */}
                 <div style={{
                     flex: 1,
                     overflowY: 'auto',
-                    padding: '24px 24px 0',
-                    // Hide scrollbar but keep scrollable
-                    msOverflowStyle: 'none',
-                    scrollbarWidth: 'none'
+                    background: '#FAF9F6',
                 }}>
-                    <style>{`
-                        .modal-scroll-data::-webkit-scrollbar {
-                            display: none;
-                        }
-                    `}</style>
-                    <div className="text-center mb-6 modal-scroll-data">
-                        <h2 style={{ fontSize: '1.2rem', margin: '0 0 4px 0' }}>
-                            {type === 'cycle' ? 'Cycle Comparison' :
-                                type === 'monthly' ? 'Monthly Comparison' :
-                                    type === 'savings' ? 'Savings Breakdown' :
-                                        data?.category ? `${data.category.charAt(0).toUpperCase() + data.category.slice(1)} Breakdown` : 'Category Breakdown'}
-                        </h2>
-                        <p className="text-sm text-muted">
-                            {type === 'cycle' ? 'This Pay Cycle vs Last' :
-                                type === 'monthly' ? 'Spending Trend' :
-                                    type === 'savings' ? `Savings Breakdown for ${data?.cycle || 'Cycle'}` :
-                                        data?.category ? `Spending Breakdown for ${data.category.charAt(0).toUpperCase() + data.category.slice(1)}` :
-                                            `Spending Breakdown for this month`}
-                        </p>
-                    </div>
-
-                    <div style={{ marginBottom: '24px' }}>
+                    <div style={{ padding: '24px' }}>
                         {/* Comparison Charts... same logic... */}
                         {type === 'monthly' && (
                             <div className="card animate-fade-in">
@@ -164,10 +143,6 @@ export function VisualInsightModal({ isOpen, onClose, type, data, metrics }) {
                 {/* Fixed Embedded Chat Container */}
                 <div style={{
                     marginTop: 'auto',
-                    backgroundColor: '#FAF9F6',
-                    borderTop: '1px solid #E6E6E0',
-                    borderRadius: '0 0 24px 24px',
-                    overflow: 'hidden',
                     flexShrink: 0
                 }}>
                     <EmbeddedChat

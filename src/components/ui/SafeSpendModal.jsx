@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { Modal } from './Modal';
 import { useUser } from '../../lib/UserContext';
 import { TrendingUp, TrendingDown, HelpCircle, AlertCircle } from 'lucide-react';
@@ -7,23 +6,6 @@ import { EmbeddedChat } from './EmbeddedChat';
 export function SafeSpendModal({ isOpen, onClose }) {
     const { state } = useUser();
     const dailyTarget = state.financials.dailyTarget || 30;
-    const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
-
-    // Handle Visual Viewport for mobile keyboards
-    useEffect(() => {
-        if (!isOpen) return;
-
-        const handleResize = () => {
-            if (window.visualViewport) {
-                setViewportHeight(window.visualViewport.height);
-            }
-        };
-
-        window.visualViewport?.addEventListener('resize', handleResize);
-        handleResize();
-
-        return () => window.visualViewport?.removeEventListener('resize', handleResize);
-    }, [isOpen]);
 
     // Mock daily data for the chart
     const dailySpend = [
@@ -43,113 +25,117 @@ export function SafeSpendModal({ isOpen, onClose }) {
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
             <div className="flex flex-col" style={{
-                height: `${viewportHeight - 100}px`,
-                maxHeight: '90vh',
-                margin: '-24px -24px',
-                transition: 'height 0.2s ease-out'
+                height: '100%',
+                background: 'var(--bg-app)',
+                overflow: 'hidden'
             }}>
-                {/* Conversational Header & Chart Content - Scrollable */}
+                {/* Header Container - Fixed at top */}
+                <div style={{
+                    padding: '24px 24px 16px',
+                    textAlign: 'center',
+                    borderBottom: '1px solid #E6E6E0',
+                    background: 'white',
+                    flexShrink: 0
+                }}>
+                    <h2 style={{ fontSize: '1.1rem', margin: 0, color: 'var(--text-primary)' }}>Safe to Spend</h2>
+                    <p className="text-xs text-muted uppercase tracking-wider font-bold" style={{ marginTop: 2 }}>Daily Analysis</p>
+                </div>
+
+                {/* Main Content: Scrollable Area */}
                 <div style={{
                     flex: 1,
                     overflowY: 'auto',
-                    padding: '24px 24px 0',
-                    msOverflowStyle: 'none',
-                    scrollbarWidth: 'none'
+                    background: '#FAF9F6',
                 }}>
-                    <style>{`
-                        div::-webkit-scrollbar {
-                            display: none;
-                        }
-                    `}</style>
-                    <div style={{ marginBottom: 'var(--space-4)' }}>
-                        <div style={{
-                            background: 'rgba(230, 230, 224, 0.3)',
-                            padding: '16px',
-                            borderRadius: '0 16px 16px 16px',
-                            marginBottom: '8px',
-                            maxWidth: '90%',
-                            border: '1px solid #E6E6E0'
-                        }}>
-                            <p style={{ margin: 0, fontSize: '1rem', lineHeight: '1.5' }}>
-                                Here is your spending breakdown for the last 7 days. You've been doing well, but Tuesday was a bit high.
-                            </p>
-                        </div>
-                        <span className="text-xs text-muted ml-1">Agent • Just now</span>
-                    </div>
-
-                    {/* Day-wise Breakdown Chart */}
-                    <div style={{ marginBottom: 'var(--space-4)' }}>
-                        <div className="flex justify-between items-end mb-4">
-                            <h3 className="text-sm font-bold">Last 7 Days</h3>
-                            <div className="flex items-center gap-2 text-xs text-muted">
-                                <div style={{ width: 12, height: 2, background: '#9ca3af', borderTop: '1px dashed #9ca3af' }}></div>
-                                Target: ${dailyTarget}
-                            </div>
-                        </div>
-
-                        <div style={{ position: 'relative', height: '140px', borderLeft: '1px solid #e5e7eb', borderBottom: '1px solid #e5e7eb', marginLeft: '20px' }}>
+                    <div style={{ padding: '24px' }}>
+                        <div style={{ marginBottom: 'var(--space-4)' }}>
                             <div style={{
-                                position: 'absolute',
-                                bottom: `${Math.min((dailyTarget / displayMax) * 100, 100)}%`,
-                                left: 0,
-                                right: 0,
-                                borderTop: '1px dashed #9ca3af',
-                                zIndex: 1
-                            }}></div>
+                                background: 'white',
+                                padding: '16px',
+                                borderRadius: '0 16px 16px 16px',
+                                marginBottom: '8px',
+                                maxWidth: '90%',
+                                border: '1px solid #E6E6E0',
+                                boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                            }}>
+                                <p style={{ margin: 0, fontSize: '1rem', lineHeight: '1.5' }}>
+                                    Here is your spending breakdown for the last 7 days. You've been doing well, but Tuesday was a bit high.
+                                </p>
+                            </div>
+                            <span className="text-xs text-muted ml-1">Agent • Just now</span>
+                        </div>
 
-                            <div style={{ position: 'absolute', left: '-30px', top: 0, bottom: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', fontSize: '10px', color: '#9ca3af' }}>
-                                <span>${displayMax}</span>
-                                <span>$0</span>
+                        {/* Day-wise Breakdown Chart */}
+                        <div style={{ marginBottom: 'var(--space-4)' }}>
+                            <div className="flex justify-between items-end mb-4">
+                                <h3 className="text-sm font-bold">Last 7 Days</h3>
+                                <div className="flex items-center gap-2 text-xs text-muted">
+                                    <div style={{ width: 12, height: 2, background: '#9ca3af', borderTop: '1px dashed #9ca3af' }}></div>
+                                    Target: ${dailyTarget}
+                                </div>
                             </div>
 
+                            <div style={{ position: 'relative', height: '140px', borderLeft: '1px solid #e5e7eb', borderBottom: '1px solid #e5e7eb', marginLeft: '20px' }}>
+                                <div style={{
+                                    position: 'absolute',
+                                    bottom: `${Math.min((dailyTarget / displayMax) * 100, 100)}%`,
+                                    left: 0,
+                                    right: 0,
+                                    borderTop: '1px dashed #9ca3af',
+                                    zIndex: 1
+                                }}></div>
+
+                                <div style={{ position: 'absolute', left: '-30px', top: 0, bottom: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', fontSize: '10px', color: '#9ca3af' }}>
+                                    <span>${displayMax}</span>
+                                    <span>$0</span>
+                                </div>
+
+                                <div style={{
+                                    display: 'grid',
+                                    gridTemplateColumns: 'repeat(7, 1fr)',
+                                    gap: '8px',
+                                    height: '100%',
+                                    padding: '0 8px',
+                                    position: 'relative',
+                                    zIndex: 2
+                                }}>
+                                    {dailySpend.map((item) => {
+                                        const pct = Math.min((item.amount / displayMax) * 100, 100);
+                                        const isOver = item.amount > dailyTarget;
+                                        return (
+                                            <div key={item.day} style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'center', position: 'relative' }}>
+                                                <div style={{
+                                                    width: '100%',
+                                                    height: `${pct}%`,
+                                                    backgroundColor: isOver ? 'var(--accent-primary)' : 'var(--accent-secondary)',
+                                                    borderRadius: '4px 4px 0 0',
+                                                    minHeight: '4px',
+                                                    transition: 'height 0.3s ease'
+                                                }}></div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
                             <div style={{
                                 display: 'grid',
                                 gridTemplateColumns: 'repeat(7, 1fr)',
                                 gap: '8px',
-                                height: '100%',
                                 padding: '0 8px',
-                                position: 'relative',
-                                zIndex: 2
+                                marginTop: '8px'
                             }}>
-                                {dailySpend.map((item) => {
-                                    const pct = Math.min((item.amount / displayMax) * 100, 100);
-                                    const isOver = item.amount > dailyTarget;
-                                    return (
-                                        <div key={item.day} style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'center', position: 'relative' }}>
-                                            <div style={{
-                                                width: '100%',
-                                                height: `${pct}%`,
-                                                backgroundColor: isOver ? 'var(--accent-primary)' : 'var(--accent-secondary)',
-                                                borderRadius: '4px 4px 0 0',
-                                                minHeight: '4px',
-                                                transition: 'height 0.3s ease'
-                                            }}></div>
-                                        </div>
-                                    );
-                                })}
+                                {dailySpend.map((item) => (
+                                    <span key={item.day} className="text-xs text-muted text-center">{item.day}</span>
+                                ))}
                             </div>
-                        </div>
-                        <div style={{
-                            display: 'grid',
-                            gridTemplateColumns: 'repeat(7, 1fr)',
-                            gap: '8px',
-                            padding: '0 8px',
-                            marginTop: '8px'
-                        }}>
-                            {dailySpend.map((item) => (
-                                <span key={item.day} className="text-xs text-muted text-center">{item.day}</span>
-                            ))}
                         </div>
                     </div>
                 </div>
 
-                {/* Embedded Chat with separation */}
+                {/* Embedded Chat - Fixed at bottom */}
                 <div style={{
                     marginTop: 'auto',
-                    backgroundColor: '#FAF9F6',
-                    borderTop: '1px solid #E6E6E0',
-                    borderRadius: '0 0 24px 24px',
-                    overflow: 'hidden'
+                    flexShrink: 0
                 }}>
                     <EmbeddedChat
                         contextStarters={[
