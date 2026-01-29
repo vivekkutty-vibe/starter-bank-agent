@@ -42,11 +42,13 @@ export function VisualInsightModal({ isOpen, onClose, type, data, metrics }) {
                     flex: 1,
                     overflowY: 'auto',
                     background: '#FAF9F6',
+                    display: 'flex',
+                    flexDirection: 'column'
                 }}>
                     <div style={{ padding: '24px' }}>
                         {/* Comparison Charts... same logic... */}
                         {type === 'monthly' && (
-                            <div className="card animate-fade-in">
+                            <div className="card animate-fade-in" style={{ marginBottom: 24 }}>
                                 <div className="flex justify-between text-xs text-muted mb-4">
                                     <span>Monthly Comparison</span>
                                     <span className="font-bold">Month over Month</span>
@@ -74,7 +76,7 @@ export function VisualInsightModal({ isOpen, onClose, type, data, metrics }) {
                         )}
 
                         {type === 'cycle' && (
-                            <div className="card animate-fade-in">
+                            <div className="card animate-fade-in" style={{ marginBottom: 24 }}>
                                 <div className="flex justify-between text-xs text-muted mb-4">
                                     <span>Comparison</span>
                                     <span className="font-bold">Biweekly</span>
@@ -99,7 +101,7 @@ export function VisualInsightModal({ isOpen, onClose, type, data, metrics }) {
                         )}
 
                         {type === 'category' && (
-                            <div className="flex flex-col gap-4 animate-fade-in">
+                            <div className="flex flex-col gap-4 animate-fade-in" style={{ marginBottom: 24 }}>
                                 {(() => {
                                     const total = data?.amount || 1000;
                                     const breakdown = { 'bills': total * 0.4, 'groceries': total * 0.25, 'dining': total * 0.2, 'transport': total * 0.1, 'shopping': total * 0.05 };
@@ -119,7 +121,7 @@ export function VisualInsightModal({ isOpen, onClose, type, data, metrics }) {
                         )}
 
                         {type === 'savings' && (
-                            <div className="flex flex-col gap-4 animate-fade-in">
+                            <div className="flex flex-col gap-4 animate-fade-in" style={{ marginBottom: 24 }}>
                                 {(() => {
                                     const total = data?.amount || 200;
                                     const breakdown = { 'Goal Contribution': total * 0.6, 'Round-ups': total * 0.3, 'Rewards': total * 0.1 };
@@ -138,17 +140,14 @@ export function VisualInsightModal({ isOpen, onClose, type, data, metrics }) {
                             </div>
                         )}
                     </div>
-                </div>
 
-                {/* Fixed Embedded Chat Container */}
-                <div style={{
-                    marginTop: 'auto',
-                    flexShrink: 0
-                }}>
-                    <EmbeddedChat
-                        contextStarters={getStarters(type, data)}
-                        initialMessage={`I can help analyze your ${type === 'cycle' ? 'spending cycle' : type === 'monthly' ? 'monthly trends' : type === 'savings' ? 'savings breakdown' : 'spending breakdown'}. What would you like to know?`}
-                    />
+                    {/* Chat Section is now just the EmbeddedChat component which handles its own scroll or fixedness */}
+                    <div style={{ marginTop: 'auto' }}>
+                        <EmbeddedChat
+                            contextStarters={getStarters(type, data)}
+                            initialMessage={`I can help analyze your ${type === 'cycle' ? 'spending cycle' : type === 'monthly' ? 'monthly trends' : type === 'savings' ? 'savings breakdown' : 'spending breakdown'}. What would you like to know?`}
+                        />
+                    </div>
                 </div>
             </div>
         </Modal>

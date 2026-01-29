@@ -46,6 +46,8 @@ export function SafeSpendModal({ isOpen, onClose }) {
                     flex: 1,
                     overflowY: 'auto',
                     background: '#FAF9F6',
+                    display: 'flex',
+                    flexDirection: 'column'
                 }}>
                     <div style={{ padding: '24px' }}>
                         <div style={{ marginBottom: 'var(--space-4)' }}>
@@ -130,21 +132,17 @@ export function SafeSpendModal({ isOpen, onClose }) {
                             </div>
                         </div>
                     </div>
-                </div>
 
-                {/* Embedded Chat - Fixed at bottom */}
-                <div style={{
-                    marginTop: 'auto',
-                    flexShrink: 0
-                }}>
-                    <EmbeddedChat
-                        contextStarters={[
-                            { label: 'Compare to last week', query: 'How does this week compare to last week?' },
-                            { label: 'Can I spend $50?', query: 'Can I afford to spend $50 right now?' },
-                            { label: 'Show big expenses', query: 'Show me my biggest expenses recently.' }
-                        ]}
-                        initialMessage="I've analyzed your daily spending. Want to see how it compares to your target?"
-                    />
+                    <div style={{ marginTop: 'auto' }}>
+                        <EmbeddedChat
+                            contextStarters={[
+                                { label: 'Compare to last week', query: 'How does this week compare to last week?' },
+                                { label: 'Can I spend $50?', query: 'Can I afford to spend $50 right now?' },
+                                { label: 'Show big expenses', query: 'Show me my biggest expenses recently.' }
+                            ]}
+                            initialMessage="I've analyzed your daily spending. Want to see how it compares to your target?"
+                        />
+                    </div>
                 </div>
             </div>
         </Modal>

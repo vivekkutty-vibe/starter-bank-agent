@@ -8,13 +8,24 @@ export function Modal({ isOpen, onClose, children }) {
     useEffect(() => {
         if (!isOpen) return;
 
+        // Prevent background scrolling and interaction
+        const originalStyle = window.getComputedStyle(document.body).overflow;
+        const originalHeight = window.getComputedStyle(document.body).height;
+        const originalPosition = window.getComputedStyle(document.body).position;
+        const originalTop = window.getComputedStyle(document.body).top;
+        const scrollY = window.scrollY;
+
+        document.body.style.overflow = 'hidden';
+        document.body.style.height = '100%';
+        document.body.style.position = 'fixed';
+        document.body.style.top = `-${scrollY}px`;
+        document.body.style.width = '100%';
+        document.body.style.touchAction = 'none';
+
         const handleResize = () => {
             if (window.visualViewport) {
                 const height = window.visualViewport.height;
                 setViewportHeight(height);
-
-                // Detect keyboard by comparing visual viewport to window inner height
-                // If visual viewport is significantly smaller than innerHeight, keyboard is likely up
                 setIsKeyboardUp(height < window.innerHeight * 0.85);
             } else {
                 setViewportHeight(window.innerHeight);
@@ -27,6 +38,12 @@ export function Modal({ isOpen, onClose, children }) {
         handleResize();
 
         return () => {
+            document.body.style.overflow = originalStyle;
+            document.body.style.height = originalHeight;
+            document.body.style.position = originalPosition;
+            document.body.style.top = originalTop;
+            document.body.style.touchAction = '';
+            window.scrollTo(0, scrollY);
             window.visualViewport?.removeEventListener('resize', handleResize);
             window.visualViewport?.removeEventListener('scroll', handleResize);
             window.removeEventListener('resize', handleResize);
@@ -49,23 +66,24 @@ export function Modal({ isOpen, onClose, children }) {
             zIndex: 1000,
             backdropFilter: 'blur(4px)',
             height: `${viewportHeight}px`,
-            transition: 'height 0.2s ease-out',
-            overflow: 'hidden'
+            transition: 'height 0.1s ease-out',
+            overflow: 'hidden',
+            touchAction: 'none' // Prevent dragging the backdrop
         }} onClick={onClose}>
             <div style={{
                 backgroundColor: 'var(--bg-app)',
                 width: '100%',
-                // On mobile when keyboard is up, take more space
                 maxHeight: isKeyboardUp ? '100%' : '90%',
                 borderTopLeftRadius: isKeyboardUp ? '0' : 'var(--radius-xl)',
                 borderTopRightRadius: isKeyboardUp ? '0' : 'var(--radius-xl)',
-                padding: '0', // Manage padding in children for better scroll control
+                padding: '0',
                 position: 'relative',
                 animation: 'slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
                 display: 'flex',
                 flexDirection: 'column',
                 overflow: 'hidden',
-                transition: 'all 0.3s ease'
+                transition: 'all 0.3s ease',
+                overscrollBehavior: 'contain' // Prevents scroll chaining to background
             }} onClick={e => e.stopPropagation()}>
 
                 <button onClick={onClose} style={{

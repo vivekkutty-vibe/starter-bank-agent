@@ -40,10 +40,9 @@ export function EmbeddedChat({ contextStarters = [], initialMessage = "How can I
             flexDirection: 'column',
             borderTop: '1px solid #E6E6E0',
             backgroundColor: '#FAF9F6',
-            marginTop: 'auto',
             borderRadius: '0 0 16px 16px',
-            height: '100%',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            maxHeight: '100%'
         }}>
             {/* Header / Pill */}
             <div style={{

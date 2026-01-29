@@ -229,7 +229,11 @@ function IncomeStep({ data, update, error }) {
     return (
         <div>
             <h2 style={{ fontSize: '1.25rem', marginBottom: 'var(--space-2)' }}>Income Details</h2>
-            <p className="text-sm text-muted" style={{ marginBottom: 'var(--space-6)' }}>Choose your next payday. I've found these transactions from your history that look like income.</p>
+            <p className="text-sm text-muted" style={{ marginBottom: 'var(--space-6)' }}>
+                {showSearch
+                    ? "I've found these transactions from your history that look like income. Please confirm your monthly amount."
+                    : "Choose your next payday to help me identify your recurring income."}
+            </p>
 
             <label style={{ display: 'block', marginBottom: 'var(--space-6)' }}>
                 <span className="text-xs text-muted" style={{ display: 'block', marginBottom: 4 }}>Pay Frequency</span>
