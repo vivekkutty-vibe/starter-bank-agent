@@ -35,7 +35,24 @@ export function Onboarding() {
             return;
         }
 
-        if (step === 4) {
+        if (step === 3) {
+            // Calculate recommended budget based on goal
+            const fixedTotal = Number(formData.rentAmount) + Number(formData.utilityAmount) + Number(formData.netflixAmount);
+            let monthlyGoalSaving = 0;
+            if (formData.goalType === 'percentage') {
+                monthlyGoalSaving = Math.round(formData.payAmount * (formData.goalPercentage / 100));
+            } else {
+                monthlyGoalSaving = Math.round(formData.goalTargetAmount / (formData.goalTargetMonths || 1));
+            }
+
+            const recommendedLimit = Math.max(0, Math.floor((formData.payAmount - fixedTotal - monthlyGoalSaving) / 10) * 10);
+
+            setFormData(prev => ({
+                ...prev,
+                overallLimit: recommendedLimit
+            }));
+            setStep(prev => prev + 1);
+        } else if (step === 4) {
             const totalCatLimit =
                 Number(formData.diningLimit) +
                 Number(formData.shoppingLimit) +
@@ -68,7 +85,7 @@ export function Onboarding() {
                     travel: Number(formData.travelLimit),
                     entertainment: Number(formData.entertainmentLimit)
                 },
-                dailyTarget: Number(formData.overallLimit / 30)
+                dailyTarget: Math.round(Number(formData.overallLimit) / 30)
             });
             completeOnboarding();
         } else {
